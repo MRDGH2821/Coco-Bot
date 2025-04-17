@@ -1,4 +1,4 @@
 {
-  "conventionalCommits.scopes": ["package", "vscode"],
+  "conventionalCommits.scopes": ["deps", "vscode"],
   "git.enableCommitSigning": true
 }
