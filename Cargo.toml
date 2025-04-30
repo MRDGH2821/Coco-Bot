@@ -6,4 +6,5 @@ edition = "2024"
 [dependencies]
 serenity = "0.12"
 tokio = { version = "1.21.2", features = ["macros", "rt-multi-thread"] }
-poise="*"
+poise = "*"
+dotenv = "0.15"
