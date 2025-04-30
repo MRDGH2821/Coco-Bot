@@ -4,7 +4,7 @@ use poise::{CreateReply, serenity_prelude as serenity};
 
 /// Displays your or another user's account creation date
 #[poise::command(slash_command, prefix_command)]
-pub async fn age(
+pub async fn user_info(
     ctx: Context<'_>,
     #[description = "Selected user"] guild_member: Option<serenity::Member>,
 ) -> Result<(), Error> {
