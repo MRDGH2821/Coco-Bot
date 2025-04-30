@@ -1,0 +1,7 @@
+{
+  "allowCompoundWords": true,
+  "ignorePaths": ["target"],
+  "language": "en,en-AU",
+  "version": "0.2",
+  "words": ["unimelb"]
+}
