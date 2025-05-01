@@ -2,7 +2,6 @@ use crate::{Context, Error};
 use ::serenity::all::CreateEmbed;
 use poise::{CreateReply, serenity_prelude as serenity};
 
-/// Displays your or another user's account creation date
 #[poise::command(slash_command, prefix_command)]
 pub async fn user_info(
     ctx: Context<'_>,
