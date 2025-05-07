@@ -1,7 +1,31 @@
 [package]
 name = "coco-bot"
 version = "0.1.0"
+authors = ["MRDGH2821 <ask.mrdgh2821@outlook.com>"]
+categories = ["Discord", "Bot", "Entertainment"]
 edition = "2024"
+exclude = [
+    ".cspell.json",
+    ".editorconfig",
+    ".env",
+    ".git",
+    ".gitignore",
+    ".trunk",
+    ".vscode",
+    "Cargo.lock",
+    "LICENSE",
+    "README.md",
+    "target",
+]
+homepage = "https://github.com/MRDGH2821/Coco-Bot"
+include = ["src"]
+keywords = ["discord", "bot", "entertainment", "rust"]
+license-file = "LICENSE"
+publish = false
+publish-lockfile = false
+readme = "README.md"
+repository = "https://github.com/MRDGH2821/Coco-Bot"
+description = "Rust port of [KittyBot](https://github.com/olliequ/KittyBot) for the CS@unimelb Discord server. "
 
 [dependencies]
 dotenv = "0.15"
