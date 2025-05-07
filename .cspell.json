@@ -1,12 +1,7 @@
 {
   "allowCompoundWords": true,
-  "ignorePaths": [
-    "target"
-  ],
+  "ignorePaths": ["*.lock", ".gitignore", ".trunk", "target"],
   "language": "en,en-AU",
   "version": "0.2",
-  "words": [
-    "dotenv",
-    "unimelb"
-  ]
+  "words": ["dotenv", "mrdgh", "unimelb"]
 }
