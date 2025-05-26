@@ -13,7 +13,7 @@ pub async fn user_info(
         ctx.author_member().await.unwrap().into_owned()
     };
 
-    let created_at = member.user.created_at().timestamp();
+    let created_at = member.user.id.created_at().timestamp();
     let joined_at = member.joined_at.unwrap().timestamp();
 
     let response = format!(
