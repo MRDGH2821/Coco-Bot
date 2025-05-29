@@ -1,4 +1,10 @@
 {
-  "conventionalCommits.scopes": ["command", "cspell", "deps", "vscode"],
+  "conventionalCommits.scopes": [
+    "command",
+    "cspell",
+    "deps",
+    "event",
+    "vscode"
+  ],
   "git.enableCommitSigning": true
 }

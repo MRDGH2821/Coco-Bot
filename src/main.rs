@@ -1,6 +1,7 @@
 use dotenv::dotenv;
 use poise::serenity_prelude as serenity;
 mod commands;
+mod events;
 
 struct Data {} // User data, which is stored and accessible in all command invocations
 type Error = Box<dyn std::error::Error + Send + Sync>;
@@ -16,6 +17,7 @@ async fn main() {
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands: commands::all_commands(),
+            event_handler: events::EventHandler,
             ..Default::default()
         })
         .initialize_owners(true)
