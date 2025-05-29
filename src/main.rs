@@ -1,4 +1,3 @@
-use ::serenity::all::Token;
 use dotenv::dotenv;
 use poise::serenity_prelude as serenity;
 mod commands;
@@ -11,7 +10,7 @@ type Context<'a> = poise::Context<'a, Data, Error>;
 async fn main() {
     dotenv().ok();
     let token =
-        Token::from_env("DISCORD_TOKEN").expect("Expected a DISCORD_TOKEN in the environment");
+        std::env::var("DISCORD_TOKEN").expect("Expected a DISCORD_TOKEN in the environment");
     let intents = serenity::GatewayIntents::non_privileged();
 
     let framework = poise::Framework::builder()
