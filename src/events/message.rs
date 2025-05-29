@@ -1,9 +1,9 @@
-use poise::serenity_prelude as serenity;
 use crate::Error;
+use poise::serenity_prelude as serenity;
 
 pub async fn message(ctx: serenity::Context, msg: serenity::Message) -> Result<(), Error> {
     // Ignore messages from bots
-    if msg.author.bot {
+    if msg.author.bot() {
         return Ok(());
     }
 
@@ -21,7 +21,7 @@ pub async fn message(ctx: serenity::Context, msg: serenity::Message) -> Result<(
     let bad_words = vec!["spam", "badword"]; // Add your own filter
     for word in bad_words {
         if msg.content.to_lowercase().contains(word) {
-            if let Err(e) = msg.delete(&ctx.http).await {
+            if let Err(e) = msg.delete(&ctx.http, Some("Bad word detected")).await {
                 eprintln!("Failed to delete message: {:?}", e);
             }
             return Ok(());

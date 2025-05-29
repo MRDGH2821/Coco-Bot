@@ -10,26 +10,23 @@ type Context<'a> = poise::Context<'a, Data, Error>;
 #[tokio::main]
 async fn main() {
     dotenv().ok();
-    let token =
-        std::env::var("DISCORD_TOKEN").expect("Expected a DISCORD_TOKEN in the environment");
+    let token = serenity::all::Token::from_env("DISCORD_TOKEN")
+        .expect("Expected a DISCORD_TOKEN in the environment");
     let mut intents = serenity::GatewayIntents::non_privileged();
     intents.insert(serenity::GatewayIntents::MESSAGE_CONTENT);
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands: commands::all_commands(),
-            event_handler: |ctx, event, framework, data| {
-                Box::pin(events::event_handler(ctx, event, framework, data))
-            },
             ..Default::default()
         })
-        .setup(|_ctx, _ready, _framework| Box::pin(async move { Ok(Data {}) }))
         .initialize_owners(true)
         .build();
     println!("Starting bot...");
 
     let client = serenity::ClientBuilder::new(token, intents)
         .framework(framework)
+        .event_handler(events::Handler)
         .await;
     println!("Client created");
     if let Err(why) = client.unwrap().start().await {
