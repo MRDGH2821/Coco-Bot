@@ -23,6 +23,12 @@
       "args": ["-x", "run"],
       "problemMatcher": ["$rustc"],
       "label": "rust: cargo watch run"
+    },
+    {
+      "type": "cargo",
+      "command": "clean",
+      "problemMatcher": ["$rustc"],
+      "label": "rust: cargo clean (clear target folder)"
     }
   ]
 }
