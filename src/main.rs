@@ -20,16 +20,14 @@ async fn main() {
             ..Default::default()
         })
         .initialize_owners(true)
-        // .setup(|ctx, _ready, framework| {
-        //     Box::pin(async move {
-        //         poise::builtins::register_globally(ctx, &framework.options().commands).await?;
-        //         Ok(Data {})
-        //     })
-        // })
         .build();
+    println!("Starting bot...");
 
     let client = serenity::ClientBuilder::new(token, intents)
         .framework(framework)
         .await;
-    client.unwrap().start().await.unwrap();
+    println!("Client created");
+    if let Err(why) = client.unwrap().start().await {
+        println!("Err with client: {:?}", why);
+    }
 }
