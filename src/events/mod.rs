@@ -1,20 +1,27 @@
 mod message;
 mod ready;
 
+use crate::{Data, Error};
+use poise::FrameworkContext;
 use poise::serenity_prelude as serenity;
 
-// Event handler struct that implements EventHandler
-pub struct EventHandler;
-
-#[serenity::async_trait]
-impl serenity::EventHandler for EventHandler {
-    async fn ready(&self, ctx: serenity::Context, ready: serenity::Ready) {
-        ready::ready(ctx, ready).await;
-    }
-
-    async fn message(&self, ctx: serenity::Context, msg: serenity::Message) {
-        if let Err(e) = message::message(ctx, msg).await {
-            eprintln!("Error in message event: {:?}", e);
+// Event handler function for poise framework
+pub async fn event_handler(
+    ctx: &serenity::Context,
+    event: &serenity::FullEvent,
+    _framework: FrameworkContext<'_, Data, Error>,
+    _data: &Data,
+) -> Result<(), Error> {
+    match event {
+        serenity::FullEvent::Ready { data_about_bot } => {
+            ready::ready(ctx.clone(), data_about_bot.clone()).await;
         }
+        serenity::FullEvent::Message { new_message } => {
+            if let Err(e) = message::message(ctx.clone(), new_message.clone()).await {
+                eprintln!("Error in message event: {:?}", e);
+            }
+        }
+        _ => {}
     }
+    Ok(())
 }

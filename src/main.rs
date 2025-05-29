@@ -12,14 +12,18 @@ async fn main() {
     dotenv().ok();
     let token =
         std::env::var("DISCORD_TOKEN").expect("Expected a DISCORD_TOKEN in the environment");
-    let intents = serenity::GatewayIntents::non_privileged();
+    let mut intents = serenity::GatewayIntents::non_privileged();
+    intents.insert(serenity::GatewayIntents::MESSAGE_CONTENT);
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands: commands::all_commands(),
-            event_handler: events::EventHandler,
+            event_handler: |ctx, event, framework, data| {
+                Box::pin(events::event_handler(ctx, event, framework, data))
+            },
             ..Default::default()
         })
+        .setup(|_ctx, _ready, _framework| Box::pin(async move { Ok(Data {}) }))
         .initialize_owners(true)
         .build();
     println!("Starting bot...");
