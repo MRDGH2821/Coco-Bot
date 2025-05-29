@@ -30,5 +30,7 @@ description = "Rust port of [KittyBot](https://github.com/olliequ/KittyBot) for 
 [dependencies]
 dotenv = "0.15"
 poise = { git = "https://github.com/serenity-rs/poise.git", branch = "serenity-next" }
+reqwest = { version = "0.12", features = ["json"] }
+serde_json = "1.0.140"
 serenity = { git = "https://github.com/serenity-rs/serenity.git", branch = "next" }
 tokio = { version = "1.45.0", features = ["macros", "rt-multi-thread"] }
