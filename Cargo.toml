@@ -23,14 +23,14 @@ keywords = ["discord", "bot", "entertainment", "rust"]
 license-file = "LICENSE"
 publish = false
 publish-lockfile = false
-readme = "README.md"
 repository = "https://github.com/MRDGH2821/Coco-Bot"
+readme = "README.md"
 description = "Rust port of [KittyBot](https://github.com/olliequ/KittyBot) for the CS@unimelb Discord server. "
 
 [dependencies]
 dotenv = "0.15"
-poise = "0.6.1"
+poise = { git = "https://github.com/serenity-rs/poise.git", branch = "serenity-next" }
 reqwest = { version = "0.12", features = ["json"] }
 serde_json = "1.0.140"
-serenity = "0.12.4"
+serenity = { git = "https://github.com/serenity-rs/serenity.git", branch = "next" }
 tokio = { version = "1.45.0", features = ["macros", "rt-multi-thread"] }
