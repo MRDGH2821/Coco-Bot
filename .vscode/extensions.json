@@ -1,10 +1,11 @@
 {
   "recommendations": [
+    "axelrindle.task-explorer",
     "eamodio.gitlens",
     "esbenp.prettier-vscode",
+    "evondev.indent-rainbow-palettes",
     "oderwat.indent-rainbow",
     "rust-lang.rust-analyzer",
-    "spmeesseman.vscode-taskexplorer",
     "streetsidesoftware.code-spell-checker",
     "tamasfe.even-better-toml",
     "usernamehw.errorlens",
