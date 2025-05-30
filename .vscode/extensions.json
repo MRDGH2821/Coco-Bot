@@ -1,6 +1,8 @@
 {
   "recommendations": [
+    "eamodio.gitlens",
     "esbenp.prettier-vscode",
+    "oderwat.indent-rainbow",
     "rust-lang.rust-analyzer",
     "spmeesseman.vscode-taskexplorer",
     "streetsidesoftware.code-spell-checker",
