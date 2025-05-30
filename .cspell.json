@@ -1,7 +1,21 @@
 {
   "allowCompoundWords": true,
-  "ignorePaths": ["*.lock", ".gitignore", ".trunk", "target"],
+  "ignorePaths": [
+    ".gitignore",
+    ".trunk",
+    ".vscode",
+    "*.lock",
+    "**/.git/**",
+    "**/.pnpm-lock.json",
+    "**/node_modules/**",
+    "**/vscode-extension/**",
+    "megalinter",
+    "package-lock.json",
+    "report",
+    "target"
+  ],
   "language": "en,en-AU",
+  "noConfigSearch": true,
   "version": "0.2",
-  "words": ["dotenv", "mrdgh", "unimelb"]
+  "words": ["megalinter", "oxsecurity", "dotenv", "mrdgh", "unimelb"]
 }
