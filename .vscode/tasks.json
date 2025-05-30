@@ -29,6 +29,11 @@
       "command": "clean",
       "problemMatcher": ["$rustc"],
       "label": "rust: cargo clean (clear target folder)"
+    },
+    {
+      "type": "shell",
+      "command": "npx mega-linter-runner --flavor rust",
+      "label": "Run Mega Linter"
     }
   ]
 }
