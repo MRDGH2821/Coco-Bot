@@ -1,0 +1,53 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/rust
+{
+  "name": "Coco bot dev container",
+
+  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+  "image": "mcr.microsoft.com/devcontainers/rust:1-1-bullseye",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/rust:1": {},
+    "ghcr.io/devcontainers-community/npm-features/prettier:1": {},
+    "ghcr.io/devcontainers-extra/features/npm-package:1": {
+      "package": "mega-linter-runner",
+      "version": "latest"
+    },
+    "ghcr.io/lee-orr/rusty-dev-containers/cargo-watch:0": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "axelrindle.task-explorer",
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode",
+        "evondev.indent-rainbow-palettes",
+        "oderwat.indent-rainbow",
+        "rust-lang.rust-analyzer",
+        "streetsidesoftware.code-spell-checker",
+        "tamasfe.even-better-toml",
+        "usernamehw.errorlens",
+        "vivaxy.vscode-conventional-commits"
+      ]
+    }
+  },
+
+  // Use 'mounts' to make the cargo cache persistent in a Docker Volume.
+  "mounts": [
+    {
+      "source": "devcontainer-cargo-cache-${devcontainerId}",
+      "target": "/usr/local/cargo",
+      "type": "volume"
+    }
+  ]
+
+  // Use 'postCreateCommand' to run commands after the container is created.
+  // "postCreateCommand": "rustc --version",
+
+  // Configure tool-specific properties.
+  // "customizations": {},
+
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  // "remoteUser": "root"
+}

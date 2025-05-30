@@ -3,6 +3,7 @@
     "command",
     "cspell",
     "deps",
+    "devcontainer",
     "event",
     "vscode"
   ],
