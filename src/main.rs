@@ -1,5 +1,6 @@
 use dotenv::dotenv;
 use poise::serenity_prelude as serenity;
+use tracing::{error, info};
 mod commands;
 mod events;
 
@@ -9,6 +10,9 @@ type Context<'a> = poise::Context<'a, Data, Error>;
 
 #[tokio::main]
 async fn main() {
+    // Initialize tracing
+    tracing_subscriber::fmt::init();
+
     dotenv().ok();
     let token = serenity::all::Token::from_env("DISCORD_TOKEN")
         .expect("Expected a DISCORD_TOKEN in the environment");
@@ -22,14 +26,14 @@ async fn main() {
         })
         .initialize_owners(true)
         .build();
-    println!("Starting bot...");
+    info!("Starting bot...");
 
     let client = serenity::ClientBuilder::new(token, intents)
         .framework(framework)
         .event_handler(events::Handler)
         .await;
-    println!("Client created");
+    info!("Client created");
     if let Err(why) = client.unwrap().start().await {
-        println!("Err with client: {:?}", why);
+        error!(error = %why, "Error with client");
     }
 }
