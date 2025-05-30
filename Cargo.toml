@@ -27,6 +27,16 @@ repository = "https://github.com/MRDGH2821/Coco-Bot"
 readme = "README.md"
 description = "Rust port of [KittyBot](https://github.com/olliequ/KittyBot) for the CS@unimelb Discord server. "
 
+[package.metadata.scripts]
+watch = "cargo watch -x run"
+run = "cargo run"
+build-release = "cargo build --release"
+build = "cargo build"
+test = "cargo test -- --nocapture"
+clean = "cargo clean"
+format = "cargo fmt --all -- --check"
+lint = "cargo clippy -- -D warnings"
+
 [dependencies]
 dotenv = "0.15"
 poise = { git = "https://github.com/serenity-rs/poise.git", branch = "serenity-next" }
