@@ -17,5 +17,14 @@
   "language": "en,en-AU",
   "noConfigSearch": true,
   "version": "0.2",
-  "words": ["megalinter", "oxsecurity", "dotenv", "mrdgh", "unimelb"]
+  "words": [
+    "axelrindle",
+    "dotenv",
+    "eamodio",
+    "esbenp",
+    "megalinter",
+    "mrdgh",
+    "oxsecurity",
+    "unimelb"
+  ]
 }
