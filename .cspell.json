@@ -28,6 +28,7 @@
     "mrdgh",
     "nocapture",
     "oxsecurity",
+    "rignore",
     "serde",
     "spmeesseman",
     "stefanzweifel",
@@ -35,6 +36,7 @@
     "tamasfe",
     "unimelb",
     "usernamehw",
+    "v8rignore",
     "venv",
     "vivaxy"
   ]
