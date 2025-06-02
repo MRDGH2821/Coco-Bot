@@ -15,13 +15,16 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "axelrindle.task-explorer",
         "eamodio.gitlens",
         "esbenp.prettier-vscode",
         "evondev.indent-rainbow-palettes",
+        "foxundermoon.shell-format",
         "oderwat.indent-rainbow",
+        "redhat.vscode-yaml",
         "rust-lang.rust-analyzer",
+        "spmeesseman.vscode-taskexplorer",
         "streetsidesoftware.code-spell-checker",
+        "taiyuuki.vscode-cargo-scripts",
         "tamasfe.even-better-toml",
         "usernamehw.errorlens",
         "vivaxy.vscode-conventional-commits"
