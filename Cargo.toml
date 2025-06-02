@@ -22,7 +22,6 @@ include = ["src"]
 keywords = ["discord", "bot", "entertainment", "rust"]
 license-file = "LICENSE"
 publish = false
-publish-lockfile = false
 repository = "https://github.com/MRDGH2821/Coco-Bot"
 readme = "README.md"
 description = "Rust port of [KittyBot](https://github.com/olliequ/KittyBot) for the CS@unimelb Discord server. "
