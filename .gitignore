@@ -18,3 +18,4 @@ target/
 
 .env
 megalinter-reports/
+reports/
