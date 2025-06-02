@@ -18,6 +18,14 @@ APPLY_FIXES: all
 #   - COPYPASTE # Uncomment to disable checks of excessive copy-pastes
 #   - SPELL # Uncomment to disable checks of spelling mistakes
 
+RUST_CLIPPY_PRE_COMMANDS:
+  - continue_if_failed: true
+    secured_env: true
+    command: sudo apt install libssl-dev
+  - continue_if_failed: true
+    secured_env: true
+    command: apk add openssl-dev
+
 SHOW_ELAPSED_TIME: true
 # Uncomment if you want MegaLinter to detect errors but not block CI to pass
 # DISABLE_ERRORS: true
