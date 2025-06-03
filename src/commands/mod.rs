@@ -1,4 +1,5 @@
 mod advice;
+mod meme_generator;
 mod ping;
 mod register;
 mod user_info;
@@ -10,6 +11,7 @@ use poise::Command;
 pub fn all_commands() -> Vec<Command<Data, Error>> {
     vec![
         advice::advice(),
+        meme_generator::meme_generator(),
         ping::ping(),
         register::register(),
         user_info::user_info(),

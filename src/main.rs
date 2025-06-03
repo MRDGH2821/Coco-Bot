@@ -1,6 +1,7 @@
 use dotenv::dotenv;
 use poise::serenity_prelude as serenity;
 use tracing::{error, info};
+mod bot_lib;
 mod commands;
 mod events;
 

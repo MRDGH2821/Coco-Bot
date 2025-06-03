@@ -35,11 +35,16 @@ test = "cargo test -- --nocapture"
 clean = "cargo clean"
 format = "cargo fmt --all -- --check"
 lint = "cargo clippy -- -D warnings"
+sort = "cargo sort"
 
 [dependencies]
+ab_glyph = "0.2.29"
 dotenv = "0.15"
+image = "0.25.6"
+imageproc = "0.25.0"
 poise = { git = "https://github.com/serenity-rs/poise.git", branch = "serenity-next" }
 reqwest = { version = "0.12", features = ["json"] }
+rusttype = "0.9.3"
 serde_json = "1.0.140"
 serenity = { git = "https://github.com/serenity-rs/serenity.git", branch = "next" }
 tokio = { version = "1.45.0", features = ["macros", "rt-multi-thread"] }
