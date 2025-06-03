@@ -1,6 +1,8 @@
 use crate::bot_lib::meme_generator;
 use crate::{Context, Error};
+use ::serenity::all::colours;
 use poise::serenity_prelude as serenity;
+use tracing::debug;
 
 async fn autocomplete_meme_template<'a>(
     _ctx: Context<'_>,
@@ -38,11 +40,18 @@ pub async fn meme_generator(
         Ok(meme_path) => {
             // Create attachment from the file path
             let attachment = serenity::CreateAttachment::path(&meme_path)?;
+            let filename = attachment.filename.clone();
+            let embed = serenity::CreateEmbed::default()
+                .title("Generated Meme")
+                .description(format!("Template: `{}`", template))
+                .colour(colours::branding::BLACK)
+                .attachment(filename);
 
             // Send the meme as a response
+            debug!(attachment = ?attachment, "Sending generated meme");
             ctx.send(
                 poise::CreateReply::default()
-                    .content(format!("Here's your meme using template: `{}`", template))
+                    .embed(embed)
                     .attachment(attachment),
             )
             .await?;
