@@ -24,11 +24,13 @@
       "package": "mega-linter-runner",
       "version": "latest"
     },
-    "ghcr.io/devcontainers-extra/features/shfmt": {},
     "ghcr.io/devcontainers/features/docker-in-docker": {},
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/rust:1": {},
     "ghcr.io/itsmechlark/features/postgresql": {},
+    "ghcr.io/lee-orr/rusty-dev-containers/cargo-binstall:0": {
+      "packages": "cocogitto"
+    },
     "ghcr.io/lee-orr/rusty-dev-containers/cargo-watch:0": {}
   },
   "image": "mcr.microsoft.com/devcontainers/rust:1-1-bullseye",
@@ -39,5 +41,8 @@
       "type": "volume"
     }
   ],
-  "name": "Coco bot dev container"
+  "name": "Coco bot dev container",
+  "postAttachCommand": {
+    "cocogitto-bootstrap": "bash .devcontainer/cocogitto-bootstrap.sh"
+  }
 }
