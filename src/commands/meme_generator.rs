@@ -2,19 +2,22 @@ use crate::bot_lib::meme_generator;
 use crate::{Context, Error};
 use poise::serenity_prelude as serenity;
 
-fn autocomplete_meme_template<'a>(
+async fn autocomplete_meme_template<'a>(
     _ctx: Context<'_>,
     partial: &'a str,
-) -> impl Iterator<Item = serenity::AutocompleteChoice<'a>> {
+) -> serenity::CreateAutocompleteResponse<'a> {
     let partial_lower = partial.to_lowercase();
     let templates = meme_generator::get_meme_template_files().unwrap_or_default();
-    templates
+    let choices: Vec<serenity::AutocompleteChoice<'a>> = templates
         .into_iter()
         .filter(move |template| {
             let template_lower = template.to_lowercase();
             template_lower.starts_with(&partial_lower)
         })
         .map(|name| serenity::AutocompleteChoice::new(name.clone(), name))
+        .collect();
+
+    serenity::CreateAutocompleteResponse::new().set_choices(choices)
 }
 
 /// Generate a meme with the specified template and text
@@ -55,46 +58,5 @@ pub async fn meme_generator(
         }
     }
 
-    Ok(())
-}
-
-/// List available meme templates
-#[poise::command(slash_command)]
-pub async fn meme_templates(ctx: Context<'_>) -> Result<(), Error> {
-    match meme_generator::get_meme_template_files() {
-        Ok(templates) => {
-            if templates.is_empty() {
-                ctx.say("No meme templates found!").await?;
-            } else {
-                let template_list = templates.join("\n• ");
-                let response = format!("**Available meme templates:**\n• {}", template_list);
-
-                // Split the response if it's too long for Discord
-                if response.len() > 2000 {
-                    let template_strings: Vec<&str> =
-                        templates.iter().map(|s| s.as_str()).collect();
-                    let chunked_strings: Vec<String> = template_strings
-                        .chunks(20)
-                        .map(|chunk| chunk.join("\n• "))
-                        .collect();
-                    let chunks: Vec<&str> = chunked_strings.iter().map(|s| s.as_str()).collect();
-
-                    for (i, chunk) in chunks.iter().enumerate() {
-                        let content = if i == 0 {
-                            format!("**Available meme templates:**\n• {}", chunk)
-                        } else {
-                            format!("• {}", chunk)
-                        };
-                        ctx.say(content).await?;
-                    }
-                } else {
-                    ctx.say(response).await?;
-                }
-            }
-        }
-        Err(e) => {
-            ctx.say(format!("Failed to list templates: {}", e)).await?;
-        }
-    }
     Ok(())
 }
