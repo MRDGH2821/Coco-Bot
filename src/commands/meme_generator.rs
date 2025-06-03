@@ -2,11 +2,28 @@ use crate::bot_lib::meme_generator;
 use crate::{Context, Error};
 use poise::serenity_prelude as serenity;
 
+fn autocomplete_meme_template<'a>(
+    _ctx: Context<'_>,
+    partial: &'a str,
+) -> impl Iterator<Item = serenity::AutocompleteChoice<'a>> {
+    let partial_lower = partial.to_lowercase();
+    let templates = meme_generator::get_meme_template_files().unwrap_or_default();
+    templates
+        .into_iter()
+        .filter(move |template| {
+            let template_lower = template.to_lowercase();
+            template_lower.starts_with(&partial_lower)
+        })
+        .map(|name| serenity::AutocompleteChoice::new(name.clone(), name))
+}
+
 /// Generate a meme with the specified template and text
 #[poise::command(slash_command)]
 pub async fn meme_generator(
     ctx: Context<'_>,
-    #[description = "Name of the meme template file"] template: String,
+    #[description = "Name of the meme template file"]
+    #[autocomplete = "autocomplete_meme_template"]
+    template: String,
     #[description = "Text to display at the top of the meme"] top_text: String,
     #[description = "Text to display at the bottom of the meme"] bottom_text: String,
 ) -> Result<(), Error> {
