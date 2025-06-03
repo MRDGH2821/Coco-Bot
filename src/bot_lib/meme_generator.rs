@@ -79,7 +79,7 @@ pub fn get_meme_template_path(filename: &str) -> String {
     format!("src/assets/meme_templates/{}", filename)
 }
 
-/// Generates a meme by adding text to a template image
+/// Generates a meme by adding text to a template image with intelligent text wrapping and sizing
 ///
 /// # Arguments
 ///
@@ -114,66 +114,62 @@ pub fn generate_meme(
     let font_data = include_bytes!("../assets/fonts/unicode-impact.ttf");
     let font = FontRef::try_from_slice(font_data).expect("Failed to load Impact font");
 
-    // Calculate font size based on image width
-    let font_size = (width as f32 * 0.08).max(20.0); // Minimum 20px, scale with image
-    let scale = PxScale::from(font_size);
-
     // Text color (white with black outline)
     let white = Rgba([255u8, 255u8, 255u8, 255u8]);
     let black = Rgba([0u8, 0u8, 0u8, 255u8]);
 
+    // Calculate available areas for text (leaving margins)
+    let text_margin = (width as f32 * 0.05) as u32; // 5% margin on each side
+    let max_text_width = width - (text_margin * 2);
+    let max_text_height = (height as f32 * 0.2) as u32; // 20% of image height for each text area
+
     // Draw top text
     if !top_text.is_empty() {
         let top_text_upper = top_text.to_uppercase();
-        let text_width = calculate_text_width(&font, scale, &top_text_upper);
-        let x = ((width as f32 - text_width) / 2.0).max(0.0) as i32;
-        let y = (height as f32 * 0.05) as i32;
+        let (wrapped_lines, font_size) = prepare_text_with_wrapping(
+            &font,
+            &top_text_upper,
+            max_text_width,
+            max_text_height,
+            width,
+        );
+        
+        let scale = PxScale::from(font_size);
+        let line_height = (font_size * 1.2) as i32; // 120% of font size for line spacing
+        let start_y = (height as f32 * 0.05) as i32;
 
-        // Draw black outline
-        for dx in -2..=2 {
-            for dy in -2..=2 {
-                if dx != 0 || dy != 0 {
-                    draw_text_mut(
-                        &mut rgba_img,
-                        black,
-                        x + dx,
-                        y + dy,
-                        scale,
-                        &font,
-                        &top_text_upper,
-                    );
-                }
-            }
+        for (i, line) in wrapped_lines.iter().enumerate() {
+            let text_width = calculate_text_width(&font, scale, line);
+            let x = ((width as f32 - text_width) / 2.0).max(text_margin as f32) as i32;
+            let y = start_y + (i as i32 * line_height);
+
+            draw_text_with_outline(&mut rgba_img, &font, scale, line, x, y, white, black);
         }
-        // Draw white text
-        draw_text_mut(&mut rgba_img, white, x, y, scale, &font, &top_text_upper);
     }
 
     // Draw bottom text
     if !bottom_text.is_empty() {
         let bottom_text_upper = bottom_text.to_uppercase();
-        let text_width = calculate_text_width(&font, scale, &bottom_text_upper);
-        let x = ((width as f32 - text_width) / 2.0).max(0.0) as i32;
-        let y = (height as f32 * 0.85) as i32;
+        let (wrapped_lines, font_size) = prepare_text_with_wrapping(
+            &font,
+            &bottom_text_upper,
+            max_text_width,
+            max_text_height,
+            width,
+        );
+        
+        let scale = PxScale::from(font_size);
+        let line_height = (font_size * 1.2) as i32; // 120% of font size for line spacing
+        let total_text_height = (wrapped_lines.len() as i32 - 1) * line_height;
+        let start_y = (height as f32 * 0.85) as i32 - total_text_height;
 
-        // Draw black outline
-        for dx in -2..=2 {
-            for dy in -2..=2 {
-                if dx != 0 || dy != 0 {
-                    draw_text_mut(
-                        &mut rgba_img,
-                        black,
-                        x + dx,
-                        y + dy,
-                        scale,
-                        &font,
-                        &bottom_text_upper,
-                    );
-                }
-            }
+        for (i, line) in wrapped_lines.iter().enumerate() {
+            let text_width = calculate_text_width(&font, scale, line);
+            let x = ((width as f32 - text_width) / 2.0).max(text_margin as f32) as i32;
+            let y = start_y + (i as i32 * line_height);
+
+            draw_text_with_outline(&mut rgba_img, &font, scale, line, x, y, white, black);
         }
-        // Draw white text
-        draw_text_mut(&mut rgba_img, white, x, y, scale, &font, &bottom_text_upper);
     }
 
     Ok(DynamicImage::ImageRgba8(rgba_img))
@@ -192,6 +188,125 @@ fn calculate_text_width(font: &FontRef, scale: PxScale, text: &str) -> f32 {
     }
 
     width
+}
+
+/// Calculates the height of text when rendered
+fn calculate_text_height(font: &FontRef, scale: PxScale) -> f32 {
+    use ab_glyph::{Font, ScaleFont};
+    
+    let scaled_font = font.as_scaled(scale);
+    let metrics = scaled_font.ascent() - scaled_font.descent();
+    metrics
+}
+
+/// Wraps text to fit within specified dimensions and calculates optimal font size
+fn prepare_text_with_wrapping(
+    font: &FontRef,
+    text: &str,
+    max_width: u32,
+    max_height: u32,
+    image_width: u32,
+) -> (Vec<String>, f32) {
+    // Start with initial font size based on image width
+    let mut font_size = (image_width as f32 * 0.08).max(20.0);
+    let min_font_size = 12.0;
+    let max_font_size = image_width as f32 * 0.15;
+    
+    // Clamp initial font size
+    font_size = font_size.min(max_font_size).max(min_font_size);
+    
+    loop {
+        let scale = PxScale::from(font_size);
+        let line_height = calculate_text_height(font, scale) * 1.2; // 120% spacing
+        
+        // Try to wrap text with current font size
+        let wrapped_lines = wrap_text_to_lines(font, scale, text, max_width as f32);
+        let total_height = wrapped_lines.len() as f32 * line_height;
+        
+        // Check if text fits within height constraints
+        if total_height <= max_height as f32 || font_size <= min_font_size {
+            return (wrapped_lines, font_size);
+        }
+        
+        // Reduce font size and try again
+        font_size = (font_size * 0.9).max(min_font_size);
+    }
+}
+
+/// Wraps text into multiple lines to fit within the specified width
+fn wrap_text_to_lines(font: &FontRef, scale: PxScale, text: &str, max_width: f32) -> Vec<String> {
+    let words: Vec<&str> = text.split_whitespace().collect();
+    if words.is_empty() {
+        return vec![String::new()];
+    }
+    
+    let mut lines = Vec::new();
+    let mut current_line = String::new();
+    
+    for word in words {
+        let test_line = if current_line.is_empty() {
+            word.to_string()
+        } else {
+            format!("{} {}", current_line, word)
+        };
+        
+        let line_width = calculate_text_width(font, scale, &test_line);
+        
+        if line_width <= max_width {
+            current_line = test_line;
+        } else {
+            // Current line is too wide, start a new line
+            if !current_line.is_empty() {
+                lines.push(current_line);
+                current_line = word.to_string();
+            } else {
+                // Single word is too wide, break it down
+                current_line = word.to_string();
+            }
+        }
+    }
+    
+    if !current_line.is_empty() {
+        lines.push(current_line);
+    }
+    
+    // If no lines were created, return the original text
+    if lines.is_empty() {
+        lines.push(text.to_string());
+    }
+    
+    lines
+}
+
+/// Draws text with a black outline for better visibility
+fn draw_text_with_outline(
+    image: &mut image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
+    font: &FontRef,
+    scale: PxScale,
+    text: &str,
+    x: i32,
+    y: i32,
+    text_color: Rgba<u8>,
+    outline_color: Rgba<u8>,
+) {
+    // Draw black outline
+    for dx in -2..=2 {
+        for dy in -2..=2 {
+            if dx != 0 || dy != 0 {
+                draw_text_mut(
+                    image,
+                    outline_color,
+                    x + dx,
+                    y + dy,
+                    scale,
+                    font,
+                    text,
+                );
+            }
+        }
+    }
+    // Draw main text
+    draw_text_mut(image, text_color, x, y, scale, font, text);
 }
 
 /// Saves a generated meme to a file
