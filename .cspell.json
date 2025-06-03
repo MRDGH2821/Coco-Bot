@@ -30,6 +30,7 @@
     "oxsecurity",
     "rignore",
     "serde",
+    "shfmt",
     "spmeesseman",
     "stefanzweifel",
     "taiyuuki",

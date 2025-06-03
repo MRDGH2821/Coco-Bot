@@ -1,17 +1,4 @@
 {
-  "name": "Coco bot dev container",
-  "image": "mcr.microsoft.com/devcontainers/rust:1-1-bullseye",
-  "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers/features/rust:1": {},
-    "ghcr.io/devcontainers-community/npm-features/prettier:1": {},
-    "ghcr.io/devcontainers-extra/features/npm-package:1": {
-      "package": "mega-linter-runner",
-      "version": "latest"
-    },
-    "ghcr.io/lee-orr/rusty-dev-containers/cargo-watch:0": {}
-  },
   "customizations": {
     "vscode": {
       "extensions": [
@@ -31,11 +18,26 @@
       ]
     }
   },
+  "features": {
+    "ghcr.io/devcontainers-community/npm-features/prettier:1": {},
+    "ghcr.io/devcontainers-extra/features/npm-package:1": {
+      "package": "mega-linter-runner",
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers-extra/features/shfmt": {},
+    "ghcr.io/devcontainers/features/docker-in-docker": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/rust:1": {},
+    "ghcr.io/itsmechlark/features/postgresql": {},
+    "ghcr.io/lee-orr/rusty-dev-containers/cargo-watch:0": {}
+  },
+  "image": "mcr.microsoft.com/devcontainers/rust:1-1-bullseye",
   "mounts": [
     {
       "source": "devcontainer-cargo-cache-${devcontainerId}",
       "target": "/usr/local/cargo",
       "type": "volume"
     }
-  ]
+  ],
+  "name": "Coco bot dev container"
 }
