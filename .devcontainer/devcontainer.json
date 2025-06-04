@@ -42,7 +42,7 @@
     }
   ],
   "name": "Coco bot dev container",
-  "postAttachCommand": {
+  "postCreateCommand": {
     "cocogitto-bootstrap": "bash .devcontainer/cocogitto-bootstrap.sh"
   }
 }
