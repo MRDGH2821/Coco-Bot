@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.1.4 - 2025-06-05
+#### Continuous Integration
+- :green_heart: skip package tag for musl builds - (3c86ffd) - MRDGH2821
+
+- - -
+
 ## v0.1.3 - 2025-06-05
 #### Build system
 - **(deps)** :package: remove openssl vendored package - (fd9a251) - MRDGH2821
