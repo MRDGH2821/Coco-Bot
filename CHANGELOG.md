@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.1.1 - 2025-06-05
+#### Build system
+- :green_heart: fix failing ci docker builds - (e8acc4f) - MRDGH2821
+#### Continuous Integration
+- :green_heart: use different checksum command depending on os - (63b7494) - MRDGH2821
+- :bug: install openssl packages for linux builders - (38521fa) - MRDGH2821
+- :construction_worker: package non-windows builds with `.bin` extension - (dd5a827) - MRDGH2821
+#### Miscellaneous Chores
+- **(vscode)** :wrench: sync tags on git pull & push - (b15e3e2) - MRDGH2821
+- :see_no_evil: update exclude list - (90b20d0) - MRDGH2821
+
+- - -
+
 ## v0.1.0 - 2025-06-05
 #### Bug Fixes
 - **(command)** :rotating_light: fix return type - (544e7c0) - MRDGH2821
