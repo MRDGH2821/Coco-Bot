@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.1.5 - 2025-06-05
+#### Build system
+- :construction_worker: remove musl targets - (8556627) - MRDGH2821
+#### Miscellaneous Chores
+- **(devcontainer)** :sparkles: add trunk feature - (63d1815) - MRDGH2821
+
+- - -
+
 ## v0.1.4 - 2025-06-05
 #### Continuous Integration
 - :green_heart: skip package tag for musl builds - (3c86ffd) - MRDGH2821
