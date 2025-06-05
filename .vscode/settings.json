@@ -23,6 +23,7 @@
     "deps",
     "devcontainer",
     "event",
+    "megalinter",
     "vscode"
   ],
   "editor.defaultFormatter": "esbenp.prettier-vscode",

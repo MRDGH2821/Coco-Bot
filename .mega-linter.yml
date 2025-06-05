@@ -18,6 +18,8 @@ APPLY_FIXES: all
 #   - COPYPASTE # Uncomment to disable checks of excessive copy-pastes
 #   - SPELL # Uncomment to disable checks of spelling mistakes
 
+IGNORE_GITIGNORED_FILES: true
+
 RUST_CLIPPY_PRE_COMMANDS:
   - continue_if_failed: true
     secured_env: true
