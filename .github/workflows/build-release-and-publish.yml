@@ -1,0 +1,200 @@
+name: Build Release and Publish
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'  # Matches semantic version tags like v1.0.0, v1.2.3-beta, etc.
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux GNU targets
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            name: linux-amd64-gnu
+            cross: false
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-latest
+            name: linux-arm64-gnu
+            cross: true
+          - target: armv7-unknown-linux-gnueabihf
+            os: ubuntu-latest
+            name: linux-armv7-gnu
+            cross: true
+          
+          # Linux musl targets (statically linked)
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+            name: linux-amd64-musl
+            cross: true
+          - target: aarch64-unknown-linux-musl
+            os: ubuntu-latest
+            name: linux-arm64-musl
+            cross: true
+          
+          # Windows targets
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            name: windows-amd64
+            cross: false
+          - target: aarch64-pc-windows-msvc
+            os: windows-latest
+            name: windows-arm64
+            cross: true
+          
+          # macOS targets
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            name: macos-amd64
+            cross: false
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            name: macos-arm64
+            cross: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install Cross
+        if: matrix.cross
+        uses: taiki-e/install-action@cross
+
+      - name: Cache Cargo dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ matrix.target }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ matrix.target }}-
+            ${{ runner.os }}-cargo-
+
+      - name: Build binary
+        run: |
+          if [ "${{ matrix.cross }}" = "true" ]; then
+            cross build --release --target ${{ matrix.target }}
+          else
+            cargo build --release --target ${{ matrix.target }}
+          fi
+        shell: bash
+
+      - name: Package binary (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          mkdir -p dist
+          binary_name="coco-bot"
+          if [ -f "target/${{ matrix.target }}/release/$binary_name" ]; then
+            cp "target/${{ matrix.target }}/release/$binary_name" "dist/$binary_name"
+            # Copy assets
+            cp -r src/assets dist/
+            # Create archive
+            tar -czf "dist/coco-bot-${{ matrix.name }}.tar.gz" -C dist "$binary_name" assets
+            # Create checksum
+            cd dist && sha256sum "coco-bot-${{ matrix.name }}.tar.gz" > "coco-bot-${{ matrix.name }}.tar.gz.sha256"
+          else
+            echo "Binary not found at expected location"
+            find target -name "$binary_name*" -type f
+            exit 1
+          fi
+
+      - name: Package binary (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          mkdir -p dist
+          $binary_name = "coco-bot.exe"
+          if (Test-Path "target/${{ matrix.target }}/release/$binary_name") {
+            Copy-Item "target/${{ matrix.target }}/release/$binary_name" "dist/$binary_name"
+            # Copy assets
+            Copy-Item -Recurse "src/assets" "dist/"
+            # Create archive
+            Compress-Archive -Path "dist/$binary_name", "dist/assets" -DestinationPath "dist/coco-bot-${{ matrix.name }}.zip"
+            # Create checksum
+            $hash = Get-FileHash "dist/coco-bot-${{ matrix.name }}.zip" -Algorithm SHA256
+            "$($hash.Hash.ToLower())  coco-bot-${{ matrix.name }}.zip" | Out-File -FilePath "dist/coco-bot-${{ matrix.name }}.zip.sha256" -Encoding ASCII
+          } else {
+            Write-Host "Binary not found at expected location"
+            Get-ChildItem -Path target -Name "$binary_name*" -Recurse
+            exit 1
+          }
+        shell: pwsh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coco-bot-${{ matrix.name }}
+          path: |
+            dist/coco-bot-${{ matrix.name }}.*
+          retention-days: 7
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Organize release assets
+        run: |
+          mkdir -p release-assets
+          find artifacts -name "coco-bot-*.*" -type f -exec cp {} release-assets/ \;
+          ls -la release-assets/
+
+      - name: Extract release notes
+        id: extract_notes
+        run: |
+          # Extract version from tag
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+          # Try to extract release notes from CHANGELOG.md or README.md
+          if [ -f CHANGELOG.md ]; then
+            # Extract section for this version from CHANGELOG.md
+            awk "/^## \[$VERSION\]/ { flag=1; next } /^## \[/ { flag=0 } flag" CHANGELOG.md > release_notes.md || echo "Release $VERSION" > release_notes.md
+          else
+            echo "Release $VERSION" > release_notes.md
+            echo "" >> release_notes.md
+            echo "Built binaries for multiple platforms:" >> release_notes.md
+            echo "- Linux (GNU libc): x86_64, aarch64, armv7" >> release_notes.md
+            echo "- Linux (musl): x86_64, aarch64 (statically linked)" >> release_notes.md
+            echo "- Windows: x86_64, aarch64" >> release_notes.md
+            echo "- macOS: x86_64, aarch64 (Apple Silicon)" >> release_notes.md
+          fi
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ steps.extract_notes.outputs.version }}
+          body_path: release_notes.md
+          files: release-assets/*
+          draft: false
+          prerelease: ${{ contains(github.ref, '-') }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
