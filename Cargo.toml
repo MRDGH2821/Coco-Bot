@@ -1,6 +1,6 @@
 [package]
 name = "coco-bot"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["MRDGH2821 <ask.mrdgh2821@outlook.com>"]
 categories = ["Discord", "Bot", "Entertainment"]
 edition = "2024"

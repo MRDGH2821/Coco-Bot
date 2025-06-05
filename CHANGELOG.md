@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.1.2 - 2025-06-05
+#### Build system
+- **(deps)** :green_heart: add vendored openssl to fix failing builds - (c470e6f) - MRDGH2821
+#### Miscellaneous Chores
+- :see_no_evil: add markdownlint ignore file - (50d2bed) - MRDGH2821
+- :rotating_light: fix & ignore linter errors - (31eb789) - MRDGH2821
+
+- - -
+
 ## v0.1.1 - 2025-06-05
 #### Build system
 - :green_heart: fix failing ci docker builds - (e8acc4f) - MRDGH2821
