@@ -33,7 +33,8 @@
     "ghcr.io/lee-orr/rusty-dev-containers/cargo-binstall:0": {
       "packages": "cocogitto,cargo-edit"
     },
-    "ghcr.io/lee-orr/rusty-dev-containers/cargo-watch:0": {}
+    "ghcr.io/lee-orr/rusty-dev-containers/cargo-watch:0": {},
+    "ghcr.io/trunk-io/devcontainer-feature/trunk": {}
   },
   "image": "mcr.microsoft.com/devcontainers/rust:1-1-bullseye",
   "mounts": [
