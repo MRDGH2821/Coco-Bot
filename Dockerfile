@@ -17,22 +17,17 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     ca-certificates \
     git \
     clang \
+    gcc-aarch64-linux-gnu \
+    gcc-arm-linux-gnueabihf \
+    libc6-dev-arm64-cross \
+    libc6-dev-armhf-cross \
     && rm -rf /var/lib/apt/lists/*
-
-# Set up cross-compilation
-ARG TARGETPLATFORM
-RUN xx-apt-get update && xx-apt-get install --no-install-recommends -y \
-    pkg-config \
-    libssl-dev
 
 # Set the working directory
 WORKDIR /app
 
-# Copy dependency manifests
+# Copy dependency manifests first for better caching
 COPY Cargo.toml Cargo.lock ./
-
-# Copy source code
-COPY src/ ./src/
 
 # Set up Rust cross-compilation target
 ARG TARGETPLATFORM
@@ -43,9 +38,19 @@ RUN case "$TARGETPLATFORM" in \
     *) echo "Unsupported platform: $TARGETPLATFORM" && exit 1 ;; \
     esac
 
-# Install the target and build
+# Pre-fetch dependencies with cross-compilation setup
 RUN RUST_TARGET=$(cat /tmp/target) && \
     rustup target add "${RUST_TARGET}" && \
+    xx-apt-get update && xx-apt-get install --no-install-recommends -y \
+    pkg-config \
+    libssl-dev
+
+# Copy the actual source code
+COPY src/ ./src/
+
+# Build the actual application
+RUN RUST_TARGET=$(cat /tmp/target) && \
+    PKG_CONFIG_ALLOW_CROSS=1 \
     xx-cargo build --release --target "${RUST_TARGET}" && \
     cp target/"${RUST_TARGET}"/release/coco-bot /app/coco-bot && \
     xx-verify /app/coco-bot
