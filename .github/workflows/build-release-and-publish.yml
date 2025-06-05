@@ -3,7 +3,7 @@ name: Build Release and Publish
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+*'  # Matches semantic version tags like v1.0.0, v1.2.3-beta, etc.
+      - "v[0-9]+.[0-9]+.[0-9]+*" # Matches semantic version tags like v1.0.0, v1.2.3-beta, etc.
 
 env:
   CARGO_TERM_COLOR: always
@@ -29,7 +29,7 @@ jobs:
             os: ubuntu-latest
             name: linux-armv7-gnu
             cross: true
-          
+
           # Linux musl targets (statically linked)
           - target: x86_64-unknown-linux-musl
             os: ubuntu-latest
@@ -39,7 +39,7 @@ jobs:
             os: ubuntu-latest
             name: linux-arm64-musl
             cross: true
-          
+
           # Windows targets
           - target: x86_64-pc-windows-msvc
             os: windows-latest
@@ -49,7 +49,7 @@ jobs:
             os: windows-latest
             name: windows-arm64
             cross: true
-          
+
           # macOS targets
           - target: x86_64-apple-darwin
             os: macos-latest
@@ -115,7 +115,7 @@ jobs:
           # Use vendored OpenSSL for cross-compilation to avoid linking issues
           export OPENSSL_STATIC=1
           export OPENSSL_VENDORED=1
-          
+
           # Set up cross-compilation environment variables
           case "${{ matrix.target }}" in
             aarch64-unknown-linux-gnu)
@@ -141,7 +141,7 @@ jobs:
               export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=aarch64-linux-gnu-gcc
               ;;
           esac
-          
+
           if [ "${{ matrix.cross }}" = "true" ]; then
             cross build --release --target ${{ matrix.target }}
           else
@@ -163,8 +163,16 @@ jobs:
             cp -r src/assets dist/
             # Create archive
             tar -czf "dist/coco-bot-${{ matrix.name }}.tar.gz" -C dist "$target_binary" assets
-            # Create checksum
-            cd dist && sha256sum "coco-bot-${{ matrix.name }}.tar.gz" > "coco-bot-${{ matrix.name }}.tar.gz.sha256"
+            # Create checksum (cross-platform compatible)
+            cd dist
+            if command -v sha256sum >/dev/null 2>&1; then
+              sha256sum "coco-bot-${{ matrix.name }}.tar.gz" > "coco-bot-${{ matrix.name }}.tar.gz.sha256"
+            elif command -v shasum >/dev/null 2>&1; then
+              shasum -a 256 "coco-bot-${{ matrix.name }}.tar.gz" > "coco-bot-${{ matrix.name }}.tar.gz.sha256"
+            else
+              echo "No SHA256 checksum tool found"
+              exit 1
+            fi
           else
             echo "Binary not found at expected location"
             find target -name "$source_binary*" -type f
@@ -206,7 +214,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -228,7 +236,7 @@ jobs:
           # Extract version from tag
           VERSION=${GITHUB_REF#refs/tags/}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          
+
           # Try to extract release notes from CHANGELOG.md or README.md
           if [ -f CHANGELOG.md ]; then
             # Extract section for this version from CHANGELOG.md
