@@ -31,7 +31,7 @@
     "ghcr.io/dhoeric/features/hadolint": {},
     "ghcr.io/itsmechlark/features/postgresql": {},
     "ghcr.io/lee-orr/rusty-dev-containers/cargo-binstall:0": {
-      "packages": "cocogitto"
+      "packages": "cocogitto,cargo-edit"
     },
     "ghcr.io/lee-orr/rusty-dev-containers/cargo-watch:0": {}
   },
