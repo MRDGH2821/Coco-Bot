@@ -69,6 +69,29 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
+      - name: Install system dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libssl-dev
+          # Install additional dependencies for cross-compilation
+          if [ "${{ matrix.cross }}" = "true" ]; then
+            case "${{ matrix.target }}" in
+              aarch64-unknown-linux-gnu)
+                sudo apt-get install -y gcc-aarch64-linux-gnu
+                ;;
+              armv7-unknown-linux-gnueabihf)
+                sudo apt-get install -y gcc-arm-linux-gnueabihf
+                ;;
+              x86_64-unknown-linux-musl)
+                sudo apt-get install -y musl-tools
+                ;;
+              aarch64-unknown-linux-musl)
+                sudo apt-get install -y gcc-aarch64-linux-gnu musl-tools
+                ;;
+            esac
+          fi
+
       - name: Install Cross
         if: matrix.cross
         uses: taiki-e/install-action@cross
@@ -89,6 +112,36 @@ jobs:
 
       - name: Build binary
         run: |
+          # Use vendored OpenSSL for cross-compilation to avoid linking issues
+          export OPENSSL_STATIC=1
+          export OPENSSL_VENDORED=1
+          
+          # Set up cross-compilation environment variables
+          case "${{ matrix.target }}" in
+            aarch64-unknown-linux-gnu)
+              export CC=aarch64-linux-gnu-gcc
+              export CXX=aarch64-linux-gnu-g++
+              export AR=aarch64-linux-gnu-ar
+              export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc
+              ;;
+            armv7-unknown-linux-gnueabihf)
+              export CC=arm-linux-gnueabihf-gcc
+              export CXX=arm-linux-gnueabihf-g++
+              export AR=arm-linux-gnueabihf-ar
+              export CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER=arm-linux-gnueabihf-gcc
+              ;;
+            x86_64-unknown-linux-musl)
+              export CC=musl-gcc
+              export CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=musl-gcc
+              ;;
+            aarch64-unknown-linux-musl)
+              export CC=aarch64-linux-gnu-gcc
+              export CXX=aarch64-linux-gnu-g++
+              export AR=aarch64-linux-gnu-ar
+              export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=aarch64-linux-gnu-gcc
+              ;;
+          esac
+          
           if [ "${{ matrix.cross }}" = "true" ]; then
             cross build --release --target ${{ matrix.target }}
           else
