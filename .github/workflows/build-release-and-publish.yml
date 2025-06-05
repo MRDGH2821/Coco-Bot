@@ -33,16 +33,6 @@ jobs:
             name: linux-armv7-gnu
             cross: true
 
-          # Linux musl targets (statically linked)
-          - target: x86_64-unknown-linux-musl
-            os: ubuntu-latest
-            name: linux-amd64-musl
-            cross: true
-          - target: aarch64-unknown-linux-musl
-            os: ubuntu-latest
-            name: linux-arm64-musl
-            cross: true
-
           # Windows targets
           - target: x86_64-pc-windows-msvc
             os: windows-latest
@@ -86,12 +76,6 @@ jobs:
               armv7-unknown-linux-gnueabihf)
                 sudo apt-get install -y gcc-arm-linux-gnueabihf
                 ;;
-              x86_64-unknown-linux-musl)
-                sudo apt-get install -y musl-tools
-                ;;
-              aarch64-unknown-linux-musl)
-                sudo apt-get install -y gcc-aarch64-linux-gnu musl-tools
-                ;;
             esac
           fi
 
@@ -132,16 +116,6 @@ jobs:
               export CXX=arm-linux-gnueabihf-g++
               export AR=arm-linux-gnueabihf-ar
               export CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER=arm-linux-gnueabihf-gcc
-              ;;
-            x86_64-unknown-linux-musl)
-              export CC=musl-gcc
-              export CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=musl-gcc
-              ;;
-            aarch64-unknown-linux-musl)
-              export CC=aarch64-linux-gnu-gcc
-              export CXX=aarch64-linux-gnu-g++
-              export AR=aarch64-linux-gnu-ar
-              export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=aarch64-linux-gnu-gcc
               ;;
           esac
 
@@ -250,7 +224,6 @@ jobs:
               echo "" >>release_notes.md
               echo "Built binaries for multiple platforms:" >>release_notes.md
               echo "- Linux (GNU libc): x86_64, aarch64, armv7" >>release_notes.md
-              echo "- Linux (musl): x86_64, aarch64 (statically linked)" >>release_notes.md
               echo "- Windows: x86_64, aarch64" >>release_notes.md
               echo "- macOS: x86_64, aarch64 (Apple Silicon)" >>release_notes.md
           fi
