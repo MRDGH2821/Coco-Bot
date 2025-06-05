@@ -6,14 +6,19 @@ categories = ["Discord", "Bot", "Entertainment"]
 edition = "2024"
 exclude = [
     ".cspell.json",
+    ".devcontainer",
     ".editorconfig",
     ".env",
     ".git",
+    ".github",
     ".gitignore",
     ".trunk",
+    ".v8rignore",
     ".vscode",
     "LICENCE",
+    "megalinter-reports",
     "README.md",
+    "sample.env",
     "target",
 ]
 homepage = "https://github.com/MRDGH2821/Coco-Bot"
