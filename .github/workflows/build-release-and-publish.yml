@@ -3,10 +3,13 @@ name: Build Release and Publish
 on:
   push:
     tags:
-      - "v[0-9]+.[0-9]+.[0-9]+*" # Matches semantic version tags like v1.0.0, v1.2.3-beta, etc.
+      # Matches semantic version tags like v1.0.0, v1.2.3-beta, etc.
+      - v[0-9]+.[0-9]+.[0-9]+*
 
 env:
   CARGO_TERM_COLOR: always
+
+permissions: read-all
 
 jobs:
   build:
@@ -235,20 +238,21 @@ jobs:
         run: |
           # Extract version from tag
           VERSION=${GITHUB_REF#refs/tags/}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "version=${VERSION}" >>"${GITHUB_OUTPUT}"
 
           # Try to extract release notes from CHANGELOG.md or README.md
-          if [ -f CHANGELOG.md ]; then
-            # Extract section for this version from CHANGELOG.md
-            awk "/^## \[$VERSION\]/ { flag=1; next } /^## \[/ { flag=0 } flag" CHANGELOG.md > release_notes.md || echo "Release $VERSION" > release_notes.md
+          if [[ -f CHANGELOG.md ]]; then
+              # Extract section for this version from CHANGELOG.md
+              awk "/^## \[${VERSION}\]/ { flag=1; next } /^## \[/ { flag=0 } flag" CHANGELOG.md >release_notes.md || echo "Release ${VERSION}" >release_notes.md
           else
-            echo "Release $VERSION" > release_notes.md
-            echo "" >> release_notes.md
-            echo "Built binaries for multiple platforms:" >> release_notes.md
-            echo "- Linux (GNU libc): x86_64, aarch64, armv7" >> release_notes.md
-            echo "- Linux (musl): x86_64, aarch64 (statically linked)" >> release_notes.md
-            echo "- Windows: x86_64, aarch64" >> release_notes.md
-            echo "- macOS: x86_64, aarch64 (Apple Silicon)" >> release_notes.md
+              echo "Release ${VERSION}" >release_notes.md
+              # shellcheck disable=SC2129
+              echo "" >>release_notes.md
+              echo "Built binaries for multiple platforms:" >>release_notes.md
+              echo "- Linux (GNU libc): x86_64, aarch64, armv7" >>release_notes.md
+              echo "- Linux (musl): x86_64, aarch64 (statically linked)" >>release_notes.md
+              echo "- Windows: x86_64, aarch64" >>release_notes.md
+              echo "- macOS: x86_64, aarch64 (Apple Silicon)" >>release_notes.md
           fi
 
       - name: Create Release

@@ -10,6 +10,7 @@ FROM --platform=$BUILDPLATFORM rust:1.87-slim-bookworm AS builder
 COPY --from=xx / /
 
 # Install build dependencies and cross-compilation tools
+# hadolint ignore=DL3008
 RUN apt-get update && apt-get install --no-install-recommends -y \
     pkg-config \
     libssl-dev \
@@ -20,7 +21,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 
 # Set up cross-compilation
 ARG TARGETPLATFORM
-RUN xx-apt-get update && xx-apt-get install -y \
+RUN xx-apt-get update && xx-apt-get install --no-install-recommends -y \
     pkg-config \
     libssl-dev
 
@@ -53,6 +54,7 @@ RUN RUST_TARGET=$(cat /tmp/target) && \
 FROM debian:bookworm-slim
 
 # Install runtime dependencies
+# hadolint ignore=DL3008
 RUN apt-get update && apt-get install --no-install-recommends -y \
     ca-certificates \
     libssl3 \
