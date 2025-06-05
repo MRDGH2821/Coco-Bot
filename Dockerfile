@@ -92,11 +92,18 @@ ENV RUST_BACKTRACE=1
 # Run the application
 CMD ["/app/coco-bot"]
 
+# Build arguments for dynamic labeling
+ARG BUILDTIME
+ARG VERSION
+ARG REVISION
+
 # Labels for better container management
 LABEL org.opencontainers.image.title="Coco Bot"
 LABEL org.opencontainers.image.description="Rust port of KittyBot for the CS@unimelb Discord server."
-LABEL org.opencontainers.image.version="0.0.0"
+LABEL org.opencontainers.image.version="${VERSION:-dev}"
 LABEL org.opencontainers.image.authors="MRDGH2821 <ask.mrdgh2821@outlook.com>"
 LABEL org.opencontainers.image.url="https://github.com/MRDGH2821/Coco-Bot"
 LABEL org.opencontainers.image.source="https://github.com/MRDGH2821/Coco-Bot"
 LABEL org.opencontainers.image.licenses="Apache-2.0"
+LABEL org.opencontainers.image.created="${BUILDTIME}"
+LABEL org.opencontainers.image.revision="${REVISION}"
