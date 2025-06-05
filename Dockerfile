@@ -1,0 +1,102 @@
+# syntax=docker/dockerfile:1
+
+# Multi-architecture build support
+FROM --platform=$BUILDPLATFORM tonistiigi/xx:1.6.1 AS xx
+
+# Build stage - Use official Rust image with cross-compilation support
+FROM --platform=$BUILDPLATFORM rust:1.87-slim-bookworm AS builder
+
+# Copy cross-compilation helper
+COPY --from=xx / /
+
+# Install build dependencies and cross-compilation tools
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    pkg-config \
+    libssl-dev \
+    ca-certificates \
+    git \
+    clang \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up cross-compilation
+ARG TARGETPLATFORM
+RUN xx-apt-get update && xx-apt-get install -y \
+    pkg-config \
+    libssl-dev
+
+# Set the working directory
+WORKDIR /app
+
+# Copy dependency manifests
+COPY Cargo.toml Cargo.lock ./
+
+# Copy source code
+COPY src/ ./src/
+
+# Set up Rust cross-compilation target
+ARG TARGETPLATFORM
+RUN case "$TARGETPLATFORM" in \
+    "linux/amd64") echo "x86_64-unknown-linux-gnu" > /tmp/target ;; \
+    "linux/arm64") echo "aarch64-unknown-linux-gnu" > /tmp/target ;; \
+    "linux/arm/v7") echo "armv7-unknown-linux-gnueabihf" > /tmp/target ;; \
+    *) echo "Unsupported platform: $TARGETPLATFORM" && exit 1 ;; \
+    esac
+
+# Install the target and build
+RUN RUST_TARGET=$(cat /tmp/target) && \
+    rustup target add "${RUST_TARGET}" && \
+    xx-cargo build --release --target "${RUST_TARGET}" && \
+    cp target/"${RUST_TARGET}"/release/coco-bot /app/coco-bot && \
+    xx-verify /app/coco-bot
+
+# Runtime stage - Use minimal base image
+FROM debian:bookworm-slim
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    ca-certificates \
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Create a non-root user
+RUN groupadd -r coco && useradd -r -g coco -s /bin/false coco
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the binary from builder stage
+COPY --from=builder /app/coco-bot /app/coco-bot
+
+# Copy assets (fonts and meme templates)
+COPY --chown=coco:coco src/assets/ /app/assets/
+
+# Make binary executable and change ownership
+RUN chmod +x /app/coco-bot && \
+    chown -R coco:coco /app
+
+# Switch to non-root user
+USER coco
+
+# Health check (optional - adjust based on your bot's capabilities)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD pgrep -x coco-bot || exit 1
+
+# Expose any ports if needed (Discord bots typically don't need this)
+# EXPOSE 8080
+
+# Set environment variables
+ENV RUST_LOG=info
+ENV RUST_BACKTRACE=1
+
+# Run the application
+CMD ["/app/coco-bot"]
+
+# Labels for better container management
+LABEL org.opencontainers.image.title="Coco Bot"
+LABEL org.opencontainers.image.description="Rust port of KittyBot for the CS@unimelb Discord server."
+LABEL org.opencontainers.image.version="0.0.0"
+LABEL org.opencontainers.image.authors="MRDGH2821 <ask.mrdgh2821@outlook.com>"
+LABEL org.opencontainers.image.url="https://github.com/MRDGH2821/Coco-Bot"
+LABEL org.opencontainers.image.source="https://github.com/MRDGH2821/Coco-Bot"
+LABEL org.opencontainers.image.licenses="Apache-2.0"
