@@ -30,5 +30,7 @@
     ".v8rignore": "ignore"
   },
   "git.enableCommitSigning": true,
+  "git.followTagsWhenSync": true,
+  "git.replaceTagsWhenPull": true,
   "rust-analyzer.diagnostics.styleLints.enable": true
 }
