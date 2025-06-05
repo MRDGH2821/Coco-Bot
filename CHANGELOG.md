@@ -2,6 +2,20 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.1.3 - 2025-06-05
+#### Build system
+- **(deps)** :package: remove openssl vendored package - (fd9a251) - MRDGH2821
+- :wrench: add cross-rs config to help failing builds - (2adce85) - MRDGH2821
+- :green_heart: use alternate way to build container images - (069cd78) - MRDGH2821
+#### Continuous Integration
+- **(megalinter)** :see_no_evil: ignore git ignored files during linting - (46b638d) - MRDGH2821
+- **(megalinter)** :package: add perl package - (2efc14e) - MRDGH2821
+- :truck: rename ci job name - (1c34052) - MRDGH2821
+#### Miscellaneous Chores
+- **(cspell)** :wrench: add words - (ae25d36) - MRDGH2821
+
+- - -
+
 ## v0.1.2 - 2025-06-05
 #### Build system
 - **(deps)** :green_heart: add vendored openssl to fix failing builds - (c470e6f) - MRDGH2821
