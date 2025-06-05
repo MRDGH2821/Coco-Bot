@@ -195,8 +195,7 @@ fn calculate_text_height(font: &FontRef, scale: PxScale) -> f32 {
     use ab_glyph::{Font, ScaleFont};
 
     let scaled_font = font.as_scaled(scale);
-    let metrics = scaled_font.ascent() - scaled_font.descent();
-    metrics
+    scaled_font.ascent() - scaled_font.descent()
 }
 
 /// Wraps text to fit within specified dimensions and calculates optimal font size
