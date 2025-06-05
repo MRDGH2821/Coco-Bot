@@ -29,5 +29,6 @@
   "files.associations": {
     ".v8rignore": "ignore"
   },
-  "git.enableCommitSigning": true
+  "git.enableCommitSigning": true,
+  "rust-analyzer.diagnostics.styleLints.enable": true
 }
