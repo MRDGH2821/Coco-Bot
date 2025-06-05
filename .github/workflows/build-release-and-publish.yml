@@ -100,18 +100,21 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           mkdir -p dist
-          binary_name="coco-bot"
-          if [ -f "target/${{ matrix.target }}/release/$binary_name" ]; then
-            cp "target/${{ matrix.target }}/release/$binary_name" "dist/$binary_name"
+          # Rust produces binary without extension on Unix
+          source_binary="coco-bot"
+          # We want to package it with .bin extension
+          target_binary="coco-bot.bin"
+          if [ -f "target/${{ matrix.target }}/release/$source_binary" ]; then
+            cp "target/${{ matrix.target }}/release/$source_binary" "dist/$target_binary"
             # Copy assets
             cp -r src/assets dist/
             # Create archive
-            tar -czf "dist/coco-bot-${{ matrix.name }}.tar.gz" -C dist "$binary_name" assets
+            tar -czf "dist/coco-bot-${{ matrix.name }}.tar.gz" -C dist "$target_binary" assets
             # Create checksum
             cd dist && sha256sum "coco-bot-${{ matrix.name }}.tar.gz" > "coco-bot-${{ matrix.name }}.tar.gz.sha256"
           else
             echo "Binary not found at expected location"
-            find target -name "$binary_name*" -type f
+            find target -name "$source_binary*" -type f
             exit 1
           fi
 
