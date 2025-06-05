@@ -46,6 +46,7 @@ ab_glyph = "0.2.29"
 dotenv = "0.15"
 image = "0.25.6"
 imageproc = "0.25.0"
+openssl = { version = "0.10.73", features = ["vendored"] }
 poise = { git = "https://github.com/serenity-rs/poise.git", branch = "serenity-next" }
 reqwest = { version = "0.12", features = ["json"] }
 rusttype = "0.9.3"
