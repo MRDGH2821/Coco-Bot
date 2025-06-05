@@ -13,14 +13,14 @@ exclude = [
     ".trunk",
     ".vscode",
     "Cargo.lock",
-    "LICENSE",
+    "LICENCE",
     "README.md",
     "target",
 ]
 homepage = "https://github.com/MRDGH2821/Coco-Bot"
 include = ["src"]
 keywords = ["discord", "bot", "entertainment", "rust"]
-license-file = "LICENSE"
+license-file = "LICENCE.txt"
 publish = false
 repository = "https://github.com/MRDGH2821/Coco-Bot"
 readme = "README.md"

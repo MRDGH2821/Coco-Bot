@@ -24,4 +24,4 @@ TODO
 
 ## Licence
 
-[Apache 2.0](./LICENSE.txt)
+[Apache 2.0](./LICENCE.txt)
