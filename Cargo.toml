@@ -12,6 +12,7 @@ exclude = [
     ".git",
     ".github",
     ".gitignore",
+    ".markdownlintignore",
     ".trunk",
     ".v8rignore",
     ".vscode",

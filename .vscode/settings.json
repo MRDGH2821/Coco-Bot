@@ -27,6 +27,7 @@
   ],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "files.associations": {
+    ".markdownlintignore": "ignore",
     ".v8rignore": "ignore"
   },
   "git.enableCommitSigning": true,
