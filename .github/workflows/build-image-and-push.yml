@@ -14,7 +14,7 @@ env:
 permissions: read-all
 
 jobs:
-  build-and-push:
+  build-image-and-push:
     runs-on: ubuntu-latest
     permissions:
       contents: read
