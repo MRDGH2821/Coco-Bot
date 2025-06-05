@@ -5,6 +5,7 @@
         "eamodio.gitlens",
         "esbenp.prettier-vscode",
         "evondev.indent-rainbow-palettes",
+        "exiasr.hadolint",
         "foxundermoon.shell-format",
         "oderwat.indent-rainbow",
         "redhat.vscode-yaml",
@@ -27,6 +28,7 @@
     "ghcr.io/devcontainers/features/docker-in-docker": {},
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/rust:1": {},
+    "ghcr.io/dhoeric/features/hadolint": {},
     "ghcr.io/itsmechlark/features/postgresql": {},
     "ghcr.io/lee-orr/rusty-dev-containers/cargo-binstall:0": {
       "packages": "cocogitto"
