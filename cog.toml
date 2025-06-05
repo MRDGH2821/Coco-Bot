@@ -10,7 +10,7 @@ skip_untracked = false
 pre_bump_hooks = [
     "cargo build --release",
     "echo 'bumping from {{latest|0.0.0}} to {{version|0.0.1}}'",
-    "cargo bump {{version|0.0.1}}",
+    "cargo set-version {{version|0.0.1}}",
     "cargo check --release",
     "git add :/Cargo.lock",
 ]
