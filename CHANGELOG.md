@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.2.1 - 2025-06-06
+#### Continuous Integration
+- :green_heart: use run time env fetching instead compile time - (c008940) - MRDGH2821
+- :bug: remove redundant quote - (ef0aa55) - MRDGH2821
+
+- - -
+
 ## v0.2.0 - 2025-06-06
 #### Build system
 - **(deps)** update cargo lock file - (4c95bd2) - MRDGH2821
