@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.4.1 - 2025-06-06
+#### Continuous Integration
+- :green_heart: fetch full commit history to generate release notes - (ec33a65) - MRDGH2821
+
+- - -
+
 ## v0.4.0 - 2025-06-06
 #### Continuous Integration
 - add tmate step to help debug workflows - (4b436a9) - MRDGH2821
