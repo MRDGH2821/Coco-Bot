@@ -47,6 +47,7 @@
     "pwsh",
     "rekor",
     "rignore",
+    "RUSTC",
     "serde",
     "shfmt",
     "spmeesseman",

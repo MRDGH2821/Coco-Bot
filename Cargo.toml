@@ -55,3 +55,6 @@ serenity = { git = "https://github.com/serenity-rs/serenity.git", branch = "next
 tokio = { version = "1.45.0", features = ["macros", "rt-multi-thread"] }
 tracing = { version = "0.1.41", features = ["async-await", "log"] }
 tracing-subscriber = "0.3.19"
+
+[build-dependencies]
+humantime = "2.1"
