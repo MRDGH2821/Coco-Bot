@@ -4,6 +4,7 @@ mod meme_generator;
 mod ping;
 mod register;
 mod user_info;
+mod xkcd;
 
 use crate::Data;
 use crate::Error;
@@ -17,5 +18,6 @@ pub fn all_commands() -> Vec<Command<Data, Error>> {
         ping::ping(),
         register::register(),
         user_info::user_info(),
+        xkcd::xkcd(),
     ]
 }
