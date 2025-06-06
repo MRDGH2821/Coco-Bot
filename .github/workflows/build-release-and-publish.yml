@@ -119,6 +119,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch full history to generate changelog
 
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
