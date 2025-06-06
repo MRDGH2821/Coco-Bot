@@ -1,6 +1,9 @@
 use crate::{Context, Error};
 
-#[poise::command(slash_command, prefix_command)]
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Get a random piece of advice.")
+)]
 pub async fn advice(ctx: Context<'_>) -> Result<(), Error> {
     let response = reqwest::get("https://api.adviceslip.com/advice")
         .await?

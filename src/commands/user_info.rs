@@ -2,7 +2,10 @@ use crate::{Context, Error};
 use ::serenity::all::CreateEmbed;
 use poise::{CreateReply, serenity_prelude as serenity};
 
-#[poise::command(slash_command, prefix_command)]
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Get information about a user in the server or yourself")
+)]
 pub async fn user_info(
     ctx: Context<'_>,
     #[description = "Selected user"] guild_member: Option<serenity::Member>,

@@ -15,7 +15,10 @@ fn to_title_case(s: &str) -> String {
         .join(" ")
 }
 
-#[poise::command(slash_command)]
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Get information about the bot.")
+)]
 pub async fn about(ctx: Context<'_>) -> Result<(), Error> {
     let version = env!("CARGO_PKG_VERSION");
     let name = env!("CARGO_PKG_NAME");

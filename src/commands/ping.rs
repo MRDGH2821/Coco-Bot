@@ -1,6 +1,9 @@
 use crate::{Context, Error};
 
-#[poise::command(slash_command, prefix_command)]
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Ping the bot to check latency.")
+)]
 pub async fn ping(ctx: Context<'_>) -> Result<(), Error> {
     let response = ctx.say("Pong!").await?;
 

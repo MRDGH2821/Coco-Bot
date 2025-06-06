@@ -23,7 +23,10 @@ async fn autocomplete_meme_template<'a>(
 }
 
 /// Generate a meme with the specified template and text
-#[poise::command(slash_command)]
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Generate a meme with the specified template and text.")
+)]
 pub async fn meme_generator(
     ctx: Context<'_>,
     #[description = "Name of the meme template file"]
