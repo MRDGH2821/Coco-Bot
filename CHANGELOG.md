@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.4.0 - 2025-06-06
+#### Continuous Integration
+- add tmate step to help debug workflows - (4b436a9) - MRDGH2821
+#### Features
+- **(meme)** :sparkles: add new meme template image - (3b11ee3) - MRDGH2821
+
+- - -
+
 ## v0.3.0 - 2025-06-06
 #### Continuous Integration
 - :adhesive_bandage: fix double quotes & changelog link - (f1e7ac1) - MRDGH2821
