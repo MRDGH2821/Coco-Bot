@@ -2,6 +2,18 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.2.0 - 2025-06-06
+#### Build system
+- **(deps)** update cargo lock file - (4c95bd2) - MRDGH2821
+#### Continuous Integration
+- :construction_worker: remove Mac OS targets - (fe1eee4) - MRDGH2821
+- :green_heart: use alternate way to cross compile & generate release notes - (73e3816) - MRDGH2821
+#### Features
+- **(command)** :memo: add descriptions & remove prefix commands - (f8cdf27) - MRDGH2821
+- **(command)** :sparkles: add new command about - (6af9cca) - MRDGH2821
+
+- - -
+
 ## v0.1.5 - 2025-06-05
 #### Build system
 - :construction_worker: remove musl targets - (8556627) - MRDGH2821
