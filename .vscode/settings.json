@@ -24,6 +24,7 @@
     "devcontainer",
     "event",
     "megalinter",
+    "meme",
     "vscode"
   ],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
