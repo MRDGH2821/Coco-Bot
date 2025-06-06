@@ -27,6 +27,12 @@ jobs:
         with:
           fetch-depth: 0 # Fetch full history for better caching
 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        with:
+          detached: true
+          limit-access-to-actor: true
+
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
       - name: Install cosign
