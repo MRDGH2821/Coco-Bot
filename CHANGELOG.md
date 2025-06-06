@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.3.0 - 2025-06-06
+#### Continuous Integration
+- :adhesive_bandage: fix double quotes & changelog link - (f1e7ac1) - MRDGH2821
+#### Features
+- **(command)** :sparkles: add xkcd command - (a55aedb) - MRDGH2821
+#### Style
+- :art: remove blank line - (2ea3d87) - MRDGH2821
+
+- - -
+
 ## v0.2.1 - 2025-06-06
 #### Continuous Integration
 - :green_heart: use run time env fetching instead compile time - (c008940) - MRDGH2821
