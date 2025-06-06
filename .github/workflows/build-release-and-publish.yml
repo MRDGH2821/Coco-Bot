@@ -139,11 +139,11 @@ jobs:
         run: |
           # Extract version from tag
           VERSION=${GITHUB_REF#refs/tags/}
-          echo "version=${VERSION}" >>"${GITHUB_OUTPUT}""
+          echo "version=${VERSION}" >>"${GITHUB_OUTPUT}"
 
           # Extract release notes using cocogitto
-          cog changelog --at "${VERSION}" > release_notes.md
-          echo "[See Complete changelog](https://github.com/bcwhite-code/brians-blueprints/blob/main/CHANGELOG.md)" >> release_notes.md
+          cog changelog --at "${VERSION}" >release_notes.md
+          echo "[See Complete changelog](https://github.com/MRDGH2821/Coco-Bot/blob/main/CHANGELOG.md)" >>release_notes.md
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
