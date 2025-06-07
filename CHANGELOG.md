@@ -2,6 +2,21 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.5.0 - 2025-06-07
+#### Bug Fixes
+- **(command)** :green_heart: copy build script & .git folder to get metadata during compilation - (c1a8309) - MRDGH2821
+#### Features
+- **(command)** add let me google that command - (9a527b7) - MRDGH2821
+#### Miscellaneous Chores
+- **(deps)** :sparkles: add rustls features - (d858480) - MRDGH2821
+- :wrench: add dns config - (929e68b) - MRDGH2821
+- :wrench: add docker compose file - (bf48630) - MRDGH2821
+- :wrench: name runtime stage as `Production` - (30ce8ad) - MRDGH2821
+#### Refactoring
+- **(command)** :truck: rename command to be an action word - (81334c1) - MRDGH2821
+
+- - -
+
 ## v0.4.1 - 2025-06-06
 #### Continuous Integration
 - :green_heart: fetch full commit history to generate release notes - (ec33a65) - MRDGH2821
