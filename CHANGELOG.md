@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.6.0 - 2025-06-07
+#### Continuous Integration
+- :construction_worker: add musl builds & work around for compilation - (4a2fc66) - MRDGH2821
+#### Features
+- **(command)** :sparkles: add fact command - (616f273) - MRDGH2821
+#### Miscellaneous Chores
+- :rotating_light: fix linter errors - (c209a02) - MRDGH2821
+
+- - -
+
 ## v0.5.0 - 2025-06-07
 #### Bug Fixes
 - **(command)** :green_heart: copy build script & .git folder to get metadata during compilation - (c1a8309) - MRDGH2821
