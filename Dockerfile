@@ -59,7 +59,7 @@ RUN RUST_TARGET=$(cat /tmp/target) && \
     xx-verify /app/coco-bot
 
 # Runtime stage - Use minimal base image
-FROM debian:bookworm-slim
+FROM debian:bookworm-slim as Production
 
 # Install runtime dependencies
 # hadolint ignore=DL3008
