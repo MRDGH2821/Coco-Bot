@@ -1,5 +1,6 @@
 mod about;
 mod advice;
+mod fact;
 mod generate_meme;
 mod let_me_google_that;
 mod ping;
@@ -15,6 +16,7 @@ pub fn all_commands() -> Vec<Command<Data, Error>> {
     vec![
         about::about(),
         advice::advice(),
+        fact::fact(),
         generate_meme::generate_meme(),
         let_me_google_that::let_me_google_that(),
         ping::ping(),
