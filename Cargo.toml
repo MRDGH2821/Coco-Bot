@@ -61,3 +61,6 @@ urlencoding = "2.1"
 
 [build-dependencies]
 humantime = "2.1"
+
+[target.'cfg(target_env = "musl")'.dependencies]
+openssl = { version = "0.10.73", features = ["vendored"] }
