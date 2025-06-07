@@ -20,20 +20,20 @@ fn to_title_case(s: &str) -> String {
     description_localized("en-US", "Get information about the bot.")
 )]
 pub async fn about(ctx: Context<'_>) -> Result<(), Error> {
-    let version = std::env::var("CARGO_PKG_VERSION").unwrap();
-    let name = std::env::var("CARGO_PKG_NAME").unwrap();
-    let repository = std::env::var("CARGO_PKG_REPOSITORY").unwrap();
+    let version = env!("CARGO_PKG_VERSION");
+    let name = env!("CARGO_PKG_NAME");
+    let repository = env!("CARGO_PKG_REPOSITORY");
 
     // Get build-time information
-    let git_hash = std::env::var("GIT_HASH").unwrap();
-    let git_branch = std::env::var("GIT_BRANCH").unwrap();
-    let build_time = std::env::var("BUILD_TIMESTAMP").unwrap();
+    let git_hash = env!("GIT_HASH");
+    let git_branch = env!("GIT_BRANCH");
+    let build_time = env!("BUILD_TIMESTAMP");
 
     // Get dependency versions (these are git dependencies, so we'll show their git hashes)
-    let serenity_version = std::env::var("SERENITY_VERSION").unwrap();
-    let serenity_hash = std::env::var("SERENITY_GIT_HASH").unwrap();
-    let poise_version = std::env::var("POISE_VERSION").unwrap();
-    let poise_hash = std::env::var("POISE_GIT_HASH").unwrap();
+    let serenity_version = env!("SERENITY_VERSION");
+    let serenity_hash = env!("SERENITY_GIT_HASH");
+    let poise_version = env!("POISE_VERSION");
+    let poise_hash = env!("POISE_GIT_HASH");
 
     let serenity_info = if serenity_hash != "unknown" && serenity_version != "unknown" {
         format!("v{} (git: `{}`)", serenity_version, serenity_hash)
@@ -63,14 +63,14 @@ pub async fn about(ctx: Context<'_>) -> Result<(), Error> {
             serenity_hash,
             poise_info,
             poise_hash,
-            std::env::var("RUSTC_VERSION").unwrap()
+            env!("RUSTC_VERSION")
         ), true)
         .field("🔧 Build Info", format!(
             "**Built:** <t:{}:f> (<t:{}:R>)\n\
             **Target:** {}",
             Timestamp::parse(&build_time).unwrap().timestamp(),
             Timestamp::parse(&build_time).unwrap().timestamp(),
-            std::env::var("TARGET").unwrap()
+            env!("TARGET")
         ), true)
         .color(serenity::Color::from_rgb(255, 192, 203)) // Pink color
         .footer(serenity::CreateEmbedFooter::new(format!("Built with Rust 🦀 • {} ({})", version, git_hash)))

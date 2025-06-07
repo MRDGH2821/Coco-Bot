@@ -26,8 +26,11 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 # Set the working directory
 WORKDIR /app
 
-# Copy dependency manifests first for better caching
-COPY Cargo.toml Cargo.lock ./
+# Copy dependency manifests and build script first for better caching
+COPY Cargo.toml Cargo.lock build.rs ./
+
+# Copy git folder for build context (if needed for version info, etc.)
+COPY .git/ ./.git/
 
 # Set up Rust cross-compilation target
 ARG TARGETPLATFORM

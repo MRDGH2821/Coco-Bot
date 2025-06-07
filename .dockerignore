@@ -25,7 +25,6 @@ ehthumbs.db
 Thumbs.db
 
 # Git
-.git/
 .gitignore
 
 # Documentation and project files
