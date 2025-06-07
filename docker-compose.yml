@@ -1,0 +1,9 @@
+services:
+  coco-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # image: ghcr.io/mrdgh2821/coco-bot:latest
+    env_file:
+      - .env
+    
