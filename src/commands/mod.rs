@@ -1,6 +1,6 @@
 mod about;
 mod advice;
-mod meme_generator;
+mod generate_meme;
 mod ping;
 mod register;
 mod user_info;
@@ -14,7 +14,7 @@ pub fn all_commands() -> Vec<Command<Data, Error>> {
     vec![
         about::about(),
         advice::advice(),
-        meme_generator::meme_generator(),
+        generate_meme::generate_meme(),
         ping::ping(),
         register::register(),
         user_info::user_info(),
