@@ -9,34 +9,47 @@ async fn comic_autocomplete<'a>(
     partial: &'a str,
 ) -> serenity::CreateAutocompleteResponse<'a> {
     let mut choices = Vec::new();
-    
+
     if partial.is_empty() {
         // If partial is empty, suggest some popular comic numbers
         choices.push(serenity::AutocompleteChoice::new("353 (Python)", "353"));
         choices.push(serenity::AutocompleteChoice::new("927 (Standards)", "927"));
         choices.push(serenity::AutocompleteChoice::new("386 (Duty Calls)", "386"));
         choices.push(serenity::AutocompleteChoice::new("303 (Compiling)", "303"));
-        choices.push(serenity::AutocompleteChoice::new("1205 (Is It Worth the Time?)", "1205"));
-        choices.push(serenity::AutocompleteChoice::new("1053 (Ten Thousand)", "1053"));
-        choices.push(serenity::AutocompleteChoice::new("2347 (Dependency)", "2347"));
+        choices.push(serenity::AutocompleteChoice::new(
+            "1205 (Is It Worth the Time?)",
+            "1205",
+        ));
+        choices.push(serenity::AutocompleteChoice::new(
+            "1053 (Ten Thousand)",
+            "1053",
+        ));
+        choices.push(serenity::AutocompleteChoice::new(
+            "2347 (Dependency)",
+            "2347",
+        ));
     } else if let Ok(num) = partial.parse::<u32>() {
         // If user typed a number, suggest that number and nearby ones
-        if num > 0 && num <= 3000 { // Reasonable upper bound for xkcd comics
-            choices.push(serenity::AutocompleteChoice::new(format!("Comic #{}", num), num.to_string()));
+        if num > 0 && num <= 3000 {
+            // Reasonable upper bound for xkcd comics
+            choices.push(serenity::AutocompleteChoice::new(
+                format!("Comic #{}", num),
+                num.to_string(),
+            ));
         }
-        
+
         // Suggest some nearby numbers
         for offset in [1, 2, 3, 5, 10] {
             if num + offset <= 3000 {
                 choices.push(serenity::AutocompleteChoice::new(
-                    format!("Comic #{}", num + offset), 
-                    (num + offset).to_string()
+                    format!("Comic #{}", num + offset),
+                    (num + offset).to_string(),
                 ));
             }
             if num >= offset && num - offset > 0 {
                 choices.push(serenity::AutocompleteChoice::new(
-                    format!("Comic #{}", num - offset), 
-                    (num - offset).to_string()
+                    format!("Comic #{}", num - offset),
+                    (num - offset).to_string(),
                 ));
             }
         }
@@ -55,17 +68,17 @@ async fn comic_autocomplete<'a>(
             (1579, "tech loops"),
             (1319, "automation"),
         ];
-        
+
         for (num, keywords) in popular_comics.iter() {
             if keywords.contains(&search_term) {
                 choices.push(serenity::AutocompleteChoice::new(
-                    format!("Comic #{}", num), 
-                    num.to_string()
+                    format!("Comic #{}", num),
+                    num.to_string(),
                 ));
             }
         }
     }
-    
+
     // Limit to 25 choices (Discord's limit)
     let final_choices: Vec<serenity::AutocompleteChoice> = choices.into_iter().take(25).collect();
     serenity::CreateAutocompleteResponse::new().set_choices(final_choices)
@@ -115,7 +128,7 @@ pub async fn xkcd(
     // Send the xkcd link as plain text with explanation button
     ctx.send(
         poise::CreateReply::default()
-            .content(format!("{}", xkcd_url))
+            .content(xkcd_url)
             .components(components),
     )
     .await?;

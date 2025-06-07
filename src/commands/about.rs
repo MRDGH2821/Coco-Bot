@@ -68,8 +68,8 @@ pub async fn about(ctx: Context<'_>) -> Result<(), Error> {
         .field("🔧 Build Info", format!(
             "**Built:** <t:{}:f> (<t:{}:R>)\n\
             **Target:** {}",
-            Timestamp::parse(&build_time).unwrap().timestamp(),
-            Timestamp::parse(&build_time).unwrap().timestamp(),
+            Timestamp::parse(build_time).unwrap().timestamp(),
+            Timestamp::parse(build_time).unwrap().timestamp(),
             env!("TARGET")
         ), true)
         .color(serenity::Color::from_rgb(255, 192, 203)) // Pink color
