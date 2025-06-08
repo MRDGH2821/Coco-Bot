@@ -20,6 +20,8 @@ APPLY_FIXES: all
 
 IGNORE_GITIGNORED_FILES: true
 
+FILTER_REGEX_EXCLUDE: target/*
+
 RUST_CLIPPY_PRE_COMMANDS:
   - continue_if_failed: true
     secured_env: true
