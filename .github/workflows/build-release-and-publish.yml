@@ -73,8 +73,11 @@ jobs:
             cp "target/${{ matrix.target }}/release/$source_binary" "dist/$target_binary"
             # Copy assets
             cp -r src/assets dist/
+            # Copy README.md and sample.env
+            cp README.md dist/
+            cp sample.env dist/
             # Create archive
-            tar -czf "dist/coco-bot-${{ matrix.name }}.tar.gz" -C dist "$target_binary" assets
+            tar -czf "dist/coco-bot-${{ matrix.name }}.tar.gz" -C dist "$target_binary" assets README.md sample.env
             # Create checksum (cross-platform compatible)
             cd dist
             if command -v sha256sum >/dev/null 2>&1; then
@@ -100,8 +103,11 @@ jobs:
             Copy-Item "target/${{ matrix.target }}/release/$binary_name" "dist/$binary_name"
             # Copy assets
             Copy-Item -Recurse "src/assets" "dist/"
+            # Copy README.md and sample.env
+            Copy-Item "README.md" "dist/"
+            Copy-Item "sample.env" "dist/"
             # Create archive
-            Compress-Archive -Path "dist/$binary_name", "dist/assets" -DestinationPath "dist/coco-bot-${{ matrix.name }}.zip"
+            Compress-Archive -Path "dist/$binary_name", "dist/assets", "dist/README.md", "dist/sample.env" -DestinationPath "dist/coco-bot-${{ matrix.name }}.zip"
             # Create checksum
             $hash = Get-FileHash "dist/coco-bot-${{ matrix.name }}.zip" -Algorithm SHA256
             "$($hash.Hash.ToLower())  coco-bot-${{ matrix.name }}.zip" | Out-File -FilePath "dist/coco-bot-${{ matrix.name }}.zip.sha256" -Encoding ASCII
