@@ -15,6 +15,10 @@ pre_bump_hooks = [
     "git add :/Cargo.lock",
 ]
 
+post_bump_hooks = [
+    # Re-tag release commit to ensure a signed tag
+    "git tag {{version_tag}} {{version_tag}}^{} --force --sign --annotate --message='Release {{version}}'",
+]
 tag_prefix = "v"
 
 [git_hooks.commit-msg]
@@ -27,14 +31,12 @@ cargo fmt -v --all --check
 cargo clippy
 """
 
-
 [git_hooks.pre-push]
 script = """
 #!/bin/sh
 set -e
 cog check
 """
-
 
 [changelog]
 path = "CHANGELOG.md"
