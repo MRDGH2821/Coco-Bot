@@ -20,6 +20,16 @@ Some common steps before you start the bot.
 docker compose up -d
 ```
 
+### Use installer script (Easy)
+
+Download and run the installer script that automatically detects your platform:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/MRDGH2821/Coco-Bot/main/coco-installer.sh | sh
+```
+
+Then follow [Use precompiled binaries](#use-precompiled-binaries) Step 3 onwards
+
 ### Use precompiled binaries
 
 1. Head over to https://github.com/MRDGH2821/Coco-Bot/releases
