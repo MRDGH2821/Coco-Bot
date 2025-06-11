@@ -332,6 +332,7 @@ usage() {
     echo "  -p, --platform PLATFORM Override platform detection (linux, windows, darwin)"
     echo "  -a, --arch ARCH          Override architecture detection (amd64, arm64, armv7)"
     echo "  -l, --libc LIBC          Override libc detection for Linux (gnu, musl)"
+    echo "  -d, --dry-run            Show what would be downloaded without actually downloading"
     echo "  -h, --help              Show this help message"
     echo ""
     echo "This script automatically detects your platform and downloads the"
@@ -340,6 +341,7 @@ usage() {
     echo "Manual override examples:"
     echo "  $0 --platform linux --arch amd64 --libc musl"
     echo "  $0 --platform windows --arch arm64"
+    echo "  $0 --dry-run --version v0.7.0"
 }
 
 # Parse command line arguments
@@ -348,6 +350,7 @@ CUSTOM_VERSION=""
 OVERRIDE_OS=""
 OVERRIDE_ARCH=""
 OVERRIDE_LIBC=""
+DRY_RUN=""
 
 while [ $# -gt 0 ]; do
     case $1 in
@@ -370,6 +373,10 @@ while [ $# -gt 0 ]; do
     -l | --libc)
         OVERRIDE_LIBC="$2"
         shift 2
+        ;;
+    -d | --dry-run)
+        DRY_RUN="true"
+        shift
         ;;
     -h | --help)
         usage
@@ -433,6 +440,61 @@ validate_overrides() {
     fi
 }
 
+# Display dry run information
+display_dry_run_info() {
+    echo ""
+    info "=== DRY RUN MODE ==="
+    echo ""
+
+    info "Platform Detection Results:"
+    echo "  Operating System: $OS"
+    echo "  Architecture: $ARCH"
+    if [ "$OS" = "linux" ]; then
+        echo "  Libc Type: $LIBC"
+    fi
+    echo ""
+
+    info "Download Information:"
+    echo "  Version: $VERSION"
+    echo "  Archive: $ARCHIVE_NAME"
+    echo "  Checksum: $CHECKSUM_NAME"
+    echo "  Download URL: ${GITHUB_RELEASE_URL}/${VERSION}/${ARCHIVE_NAME}"
+    echo "  Checksum URL: ${GITHUB_RELEASE_URL}/${VERSION}/${CHECKSUM_NAME}"
+    echo ""
+
+    info "Manual Overrides Applied:"
+    if [ -n "$OVERRIDE_OS" ]; then
+        echo "  Platform: $OVERRIDE_OS (overridden)"
+    else
+        echo "  Platform: auto-detected"
+    fi
+
+    if [ -n "$OVERRIDE_ARCH" ]; then
+        echo "  Architecture: $OVERRIDE_ARCH (overridden)"
+    else
+        echo "  Architecture: auto-detected"
+    fi
+
+    if [ -n "$OVERRIDE_LIBC" ]; then
+        echo "  Libc: $OVERRIDE_LIBC (overridden)"
+    elif [ "$OS" = "linux" ]; then
+        echo "  Libc: auto-detected"
+    else
+        echo "  Libc: not applicable"
+    fi
+    echo ""
+
+    info "Expected Binary:"
+    if [ "$OS" = "windows" ]; then
+        echo "  Binary Name: coco-bot.exe or coco-bot"
+    else
+        echo "  Binary Name: coco-bot.bin"
+    fi
+    echo ""
+
+    success "Dry run completed. Use without --dry-run to perform actual installation."
+}
+
 # Main execution
 main() {
     info "Starting Coco Bot installation..."
@@ -468,6 +530,13 @@ main() {
     fi
 
     construct_filename
+
+    # If dry run mode, show information and exit
+    if [ -n "$DRY_RUN" ]; then
+        display_dry_run_info
+        exit 0
+    fi
+
     download_files
     verify_checksum
     extract_archive
