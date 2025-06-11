@@ -1,9 +1,12 @@
 services:
   coco-bot:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    # image: ghcr.io/mrdgh2821/coco-bot:latest
+    # Uncomment the build section if you want to build the image instead of pulling it from the registry
+    # If you want to build the image, uncomment the build section below and comment out the image section
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+
+    image: ghcr.io/mrdgh2821/coco-bot:latest
     env_file:
       - .env
     dns:
