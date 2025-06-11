@@ -89,7 +89,7 @@ async fn comic_autocomplete<'a>(
     slash_command,
     description_localized(
         "en-US",
-        "Fetch an xkcd comic. Leave empty for latest comic or provide a number."
+        "Fetch an xkcd comic. Leave empty for latest comic, provide a number, or get a random one."
     )
 )]
 pub async fn xkcd(
@@ -97,6 +97,7 @@ pub async fn xkcd(
     #[description = "Comic number (leave empty for latest)"]
     #[autocomplete = "comic_autocomplete"]
     comic_number: Option<u32>,
+    #[description = "Get a random xkcd comic"] random: Option<bool>,
 ) -> Result<(), Error> {
     // Get the latest comic info to know the range
     let latest_response = reqwest::get("https://xkcd.com/info.0.json")
@@ -107,7 +108,12 @@ pub async fn xkcd(
     let latest_num = latest_response["num"].as_u64().unwrap_or(1) as u32;
 
     // Determine which comic to fetch
-    let target_num = if let Some(num) = comic_number {
+    let target_num = if random.unwrap_or(false) {
+        // Generate a random comic number between 1 and latest_num
+        use rand::Rng;
+        let mut rng = rand::rng();
+        rng.random_range(1..=latest_num)
+    } else if let Some(num) = comic_number {
         if num == 0 || num > latest_num {
             latest_num // Send latest comic if invalid number
         } else {

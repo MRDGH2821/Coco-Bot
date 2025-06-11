@@ -337,6 +337,7 @@ dependencies = [
  "imageproc",
  "openssl",
  "poise",
+ "rand 0.9.1",
  "reqwest",
  "rusttype",
  "serde",
