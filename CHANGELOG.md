@@ -2,6 +2,24 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.7.0 - 2025-06-11
+#### Bug Fixes
+- **(meme)** :pencil2: fix typo by renaming file - (9268f5e) - MRDGH2821
+- :recycle: load env variables at the start - (c5e7f27) - MRDGH2821
+#### Continuous Integration
+- :construction_worker: add README.md & sample.env in the archive files - (7b4dd23) - MRDGH2821
+#### Features
+- **(command)** :sparkles: add random parameter to xkcd command - (9b23839) - MRDGH2821
+- **(meme)** :recycle: look up for templates in all valid paths - (c1bf2be) - MRDGH2821
+#### Miscellaneous Chores
+- **(megalinter)** :see_no_evil: exclude target folder from being linted - (b39726b) - MRDGH2821
+- :memo: add usage instructions & make image as default way to deploy - (a25c9be) - MRDGH2821
+- :wrench: ensure that git tags are signed - (048e364) - MRDGH2821
+#### Refactoring
+- **(meme)** :recycle: change meme template finding logic - (e05e9e2) - MRDGH2821
+
+- - -
+
 ## v0.6.0 - 2025-06-07
 #### Continuous Integration
 - :construction_worker: add musl builds & work around for compilation - (4a2fc66) - MRDGH2821
