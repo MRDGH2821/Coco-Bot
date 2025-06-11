@@ -46,10 +46,10 @@ fn get_all_template_paths() -> Vec<String> {
     paths
 }
 
-/// Finds and returns the path to the meme templates directory
+/// Finds and returns all valid meme template directories
 ///
-/// Tries multiple possible locations including paths from the `MEME_TEMPLATE_PATH` environment variable
-/// and returns the first one that exists and is a directory.
+/// Checks all possible locations including paths from the `MEME_TEMPLATE_PATH` environment variable
+/// and returns all directories that exist.
 ///
 /// # Environment Variables
 ///
@@ -57,32 +57,23 @@ fn get_all_template_paths() -> Vec<String> {
 ///
 /// # Returns
 ///
-/// A `Result` containing the path to the templates directory on success,
-/// or an `io::Error` if no valid directory is found.
-fn find_templates_dir() -> io::Result<String> {
+/// A `Vec<String>` containing all valid template directory paths
+fn find_all_template_dirs() -> Vec<String> {
     let all_paths = get_all_template_paths();
+    let mut valid_dirs = Vec::new();
 
     for template_path in &all_paths {
         let path = std::path::Path::new(template_path);
         if path.exists() && path.is_dir() {
             debug!(?path, "Found meme templates directory");
-            return Ok(template_path.clone());
+            valid_dirs.push(template_path.clone());
+        } else {
+            debug!(?path, "Meme templates directory not found at this path");
         }
-        debug!(?path, "Meme templates directory not found at this path");
     }
 
-    // None of the directories found
-    debug!(
-        ?all_paths,
-        "No meme templates directory found in any of the searched paths"
-    );
-    Err(io::Error::new(
-        io::ErrorKind::NotFound,
-        format!(
-            "Meme templates directory not found. Tried paths: {:?}",
-            all_paths
-        ),
-    ))
+    debug!(?valid_dirs, "All valid template directories found");
+    valid_dirs
 }
 
 /// Returns a list of image file names from the meme_templates directory
@@ -100,45 +91,85 @@ fn find_templates_dir() -> io::Result<String> {
 ///     println!("Found template: {}", file);
 /// }
 /// ```
+/// Returns a list of image file names from all meme template directories
+///
+/// Searches across all valid template directories and returns a combined list of all image files found.
+/// Files with the same name in different directories will only appear once in the result.
+///
+/// # Returns
+///
+/// A `Result` containing a vector of file names (as `String`) on success,
+/// or an `io::Error` if no directories can be read.
+///
+/// # Examples
+///
+/// ```
+/// let template_files = get_meme_template_files().unwrap();
+/// for file in template_files {
+///     println!("Found template: {}", file);
+/// }
+/// ```
 pub fn get_meme_template_files() -> io::Result<Vec<String>> {
-    let templates_dir_path = find_templates_dir()?;
-    let templates_dir = std::path::Path::new(&templates_dir_path);
-    debug!(
-        ?templates_dir,
-        "Using meme templates directory for file listing"
-    );
-    let mut image_files = Vec::new();
+    let valid_dirs = find_all_template_dirs();
 
-    // Read directory entries
-    let entries = fs::read_dir(templates_dir)?;
+    if valid_dirs.is_empty() {
+        return Err(io::Error::new(
+            io::ErrorKind::NotFound,
+            "No meme template directories found",
+        ));
+    }
 
-    for entry in entries {
-        let entry = entry?;
-        let path = entry.path();
+    let mut image_files = std::collections::HashSet::new();
 
-        // Only include files (not directories)
-        if path.is_file() {
-            if let Some(file_name) = path.file_name() {
-                if let Some(name_str) = file_name.to_str() {
-                    // Filter for common image file extensions
-                    let name_lower = name_str.to_lowercase();
-                    if name_lower.ends_with(".jpg")
-                        || name_lower.ends_with(".jpeg")
-                        || name_lower.ends_with(".png")
-                        || name_lower.ends_with(".gif")
-                        || name_lower.ends_with(".bmp")
-                        || name_lower.ends_with(".webp")
-                    {
-                        image_files.push(name_str.to_string());
+    for templates_dir_path in &valid_dirs {
+        let templates_dir = std::path::Path::new(templates_dir_path);
+        debug!(
+            ?templates_dir,
+            "Scanning meme templates directory for files"
+        );
+
+        // Read directory entries
+        let entries = match fs::read_dir(templates_dir) {
+            Ok(entries) => entries,
+            Err(e) => {
+                debug!(?templates_dir, error = %e, "Failed to read directory");
+                continue; // Skip this directory if we can't read it
+            }
+        };
+
+        for entry in entries {
+            let entry = entry?;
+            let path = entry.path();
+
+            // Only include files (not directories)
+            if path.is_file() {
+                if let Some(file_name) = path.file_name() {
+                    if let Some(name_str) = file_name.to_str() {
+                        // Filter for common image file extensions
+                        let name_lower = name_str.to_lowercase();
+                        if name_lower.ends_with(".jpg")
+                            || name_lower.ends_with(".jpeg")
+                            || name_lower.ends_with(".png")
+                            || name_lower.ends_with(".gif")
+                            || name_lower.ends_with(".bmp")
+                            || name_lower.ends_with(".webp")
+                        {
+                            image_files.insert(name_str.to_string());
+                        }
                     }
                 }
             }
         }
     }
 
-    // Sort the files alphabetically for consistent ordering
+    // Convert HashSet to Vec and sort
+    let mut image_files: Vec<String> = image_files.into_iter().collect();
     image_files.sort();
 
+    debug!(
+        ?image_files,
+        "All image files found across template directories"
+    );
     Ok(image_files)
 }
 
@@ -151,20 +182,43 @@ pub fn get_meme_template_files() -> io::Result<Vec<String>> {
 /// # Returns
 ///
 /// A `String` containing the full path to the template file
+/// Returns the full path to a specific meme template file
+///
+/// Searches across all valid template directories to find the specified file.
+///
+/// # Arguments
+///
+/// * `filename` - The name of the template file
+///
+/// # Returns
+///
+/// A `String` containing the full path to the template file
 pub fn get_meme_template_path(
     filename: &str,
 ) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-    let templates_dir_path =
-        find_templates_dir().map_err(|e| format!("Failed to find templates directory: {}", e))?;
+    let valid_dirs = find_all_template_dirs();
 
-    let templates_dir = std::path::Path::new(&templates_dir_path);
-    debug!(
-        ?templates_dir,
-        "Using meme templates directory for template path"
-    );
+    if valid_dirs.is_empty() {
+        return Err("No meme template directories found".into());
+    }
 
-    let template_path = templates_dir.join(filename);
-    Ok(template_path.to_string_lossy().to_string())
+    // Search for the file in all valid directories
+    for templates_dir_path in &valid_dirs {
+        let templates_dir = std::path::Path::new(templates_dir_path);
+        let template_path = templates_dir.join(filename);
+
+        if template_path.exists() && template_path.is_file() {
+            debug!(?template_path, "Found meme template file");
+            return Ok(template_path.to_string_lossy().to_string());
+        }
+    }
+
+    // File not found in any directory
+    Err(format!(
+        "Meme template '{}' not found in any of the template directories: {:?}",
+        filename, valid_dirs
+    )
+    .into())
 }
 
 /// Generates a meme by adding text to a template image with intelligent text wrapping and sizing
