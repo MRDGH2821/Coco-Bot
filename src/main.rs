@@ -11,10 +11,10 @@ type Context<'a> = poise::Context<'a, Data, Error>;
 
 #[tokio::main]
 async fn main() {
+    dotenv().ok();
     // Initialize tracing
     tracing_subscriber::fmt::init();
 
-    dotenv().ok();
     let token = serenity::all::Token::from_env("DISCORD_TOKEN")
         .expect("Expected a DISCORD_TOKEN in the environment");
     let mut intents = serenity::GatewayIntents::non_privileged();
