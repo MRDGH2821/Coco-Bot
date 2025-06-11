@@ -3,7 +3,87 @@ use image::{DynamicImage, Rgba};
 use imageproc::drawing::draw_text_mut;
 use std::fs;
 use std::io;
-use std::path::Path;
+use tracing::debug;
+
+// Array of default meme template directory paths to check
+const DEFAULT_MEME_TEMPLATE_PATHS: &[&str] = &[
+    "./src/assets/meme_templates/",
+    "./assets/meme_templates/",
+    "../src/assets/meme_templates/",
+    "../assets/meme_templates/",
+    "../../src/assets/meme_templates/",
+    "../../assets/meme_templates/",
+    "../../../src/assets/meme_templates/",
+    "../../../assets/meme_templates/",
+];
+
+/// Gets all possible meme template directory paths including ones from environment variables
+///
+/// Checks the `MEME_TEMPLATE_PATH` environment variable for an additional path.
+/// The environment variable should contain a single path to check with highest priority.
+///
+/// # Returns
+///
+/// A `Vec<String>` containing all possible template directory paths
+fn get_all_template_paths() -> Vec<String> {
+    let mut paths = Vec::new();
+
+    // Add path from environment variable first (highest priority)
+    if let Ok(env_path) = std::env::var("MEME_TEMPLATE_PATH") {
+        let trimmed_path = env_path.trim();
+        if !trimmed_path.is_empty() {
+            debug!(env_path = %trimmed_path, "Found MEME_TEMPLATE_PATH environment variable");
+            paths.push(trimmed_path.to_string());
+        }
+    }
+
+    // Add default paths
+    for &default_path in DEFAULT_MEME_TEMPLATE_PATHS {
+        paths.push(default_path.to_string());
+    }
+
+    debug!(?paths, "All template paths to check");
+    paths
+}
+
+/// Finds and returns the path to the meme templates directory
+///
+/// Tries multiple possible locations including paths from the `MEME_TEMPLATE_PATH` environment variable
+/// and returns the first one that exists and is a directory.
+///
+/// # Environment Variables
+///
+/// * `MEME_TEMPLATE_PATH` - Single path to check with highest priority
+///
+/// # Returns
+///
+/// A `Result` containing the path to the templates directory on success,
+/// or an `io::Error` if no valid directory is found.
+fn find_templates_dir() -> io::Result<String> {
+    let all_paths = get_all_template_paths();
+
+    for template_path in &all_paths {
+        let path = std::path::Path::new(template_path);
+        if path.exists() && path.is_dir() {
+            debug!(?path, "Found meme templates directory");
+            return Ok(template_path.clone());
+        }
+        debug!(?path, "Meme templates directory not found at this path");
+    }
+
+    // None of the directories found
+    debug!(
+        ?all_paths,
+        "No meme templates directory found in any of the searched paths"
+    );
+    Err(io::Error::new(
+        io::ErrorKind::NotFound,
+        format!(
+            "Meme templates directory not found. Tried paths: {:?}",
+            all_paths
+        ),
+    ))
+}
 
 /// Returns a list of image file names from the meme_templates directory
 ///
@@ -21,16 +101,12 @@ use std::path::Path;
 /// }
 /// ```
 pub fn get_meme_template_files() -> io::Result<Vec<String>> {
-    let templates_dir = Path::new("src/assets/meme_templates");
-
-    // Check if directory exists
-    if !templates_dir.exists() {
-        return Err(io::Error::new(
-            io::ErrorKind::NotFound,
-            "Meme templates directory not found",
-        ));
-    }
-
+    let templates_dir_path = find_templates_dir()?;
+    let templates_dir = std::path::Path::new(&templates_dir_path);
+    debug!(
+        ?templates_dir,
+        "Using meme templates directory for file listing"
+    );
     let mut image_files = Vec::new();
 
     // Read directory entries
@@ -75,8 +151,20 @@ pub fn get_meme_template_files() -> io::Result<Vec<String>> {
 /// # Returns
 ///
 /// A `String` containing the full path to the template file
-pub fn get_meme_template_path(filename: &str) -> String {
-    format!("src/assets/meme_templates/{}", filename)
+pub fn get_meme_template_path(
+    filename: &str,
+) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+    let templates_dir_path =
+        find_templates_dir().map_err(|e| format!("Failed to find templates directory: {}", e))?;
+
+    let templates_dir = std::path::Path::new(&templates_dir_path);
+    debug!(
+        ?templates_dir,
+        "Using meme templates directory for template path"
+    );
+
+    let template_path = templates_dir.join(filename);
+    Ok(template_path.to_string_lossy().to_string())
 }
 
 /// Generates a meme by adding text to a template image with intelligent text wrapping and sizing
@@ -103,16 +191,17 @@ pub fn generate_meme(
     bottom_text: &str,
 ) -> Result<DynamicImage, Box<dyn std::error::Error + Send + Sync>> {
     // Load the template image
-    let template_path = get_meme_template_path(template_filename);
+    let template_path = get_meme_template_path(template_filename)?;
     let img = image::open(&template_path)?;
 
     // Convert to RGBA for text rendering
     let mut rgba_img = img.to_rgba8();
     let (width, height) = rgba_img.dimensions();
 
-    // Load Impact font for classic meme style
+    // Load Impact font for classic meme style (embedded at compile time)
     let font_data = include_bytes!("../assets/fonts/unicode-impact.ttf");
-    let font = FontRef::try_from_slice(font_data).expect("Failed to load Impact font");
+    let font = FontRef::try_from_slice(font_data)
+        .map_err(|e| format!("Failed to load Impact font: {}", e))?;
 
     // Text color (white with black outline)
     let white = Rgba([255u8, 255u8, 255u8, 255u8]);
