@@ -32,7 +32,7 @@ Then follow [Use precompiled binaries](#use-precompiled-binaries) Step 3 onwards
 
 ### Use precompiled binaries
 
-1. Head over to https://github.com/MRDGH2821/Coco-Bot/releases
+1. Head over to [Releases](https://github.com/MRDGH2821/Coco-Bot/releases)
 2. Download the archive as per your os & architecture.
 3. Follow the common step no. 2
 4. Double click to execute or:
@@ -66,4 +66,8 @@ cargo run
 
 ## Licence
 
-[Apache 2.0](./LICENCE.txt)
+Source Code is licenced under [Apache 2.0](./LICENCE.txt).
+
+[Impact font](./src/assets/fonts/unicode-impact.ttf) was used from [DeeFont](https://www.deefont.com/impact-font/).
+
+Images in `src/assets/meme_templates` are assumed to be in public domain.
