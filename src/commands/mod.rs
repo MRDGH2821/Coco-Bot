@@ -5,6 +5,7 @@ mod fact;
 mod fortune;
 mod generate_meme;
 mod let_me_google_that;
+mod pickup_line;
 mod ping;
 mod register;
 mod say;
@@ -24,6 +25,7 @@ pub fn all_commands() -> Vec<Command<Data, Error>> {
         fortune::fortune(),
         generate_meme::generate_meme(),
         let_me_google_that::let_me_google_that(),
+        pickup_line::pickup_line(),
         ping::ping(),
         register::register(),
         say::say(),
