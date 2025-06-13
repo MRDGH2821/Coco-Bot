@@ -45,7 +45,7 @@ check_dependencies() {
     fi
 
     # Check for extraction tools based on OS
-    if [ "$OS" = "windows" ]; then
+    if [ "${OS}" = "windows" ]; then
         if ! command -v unzip >/dev/null 2>&1; then
             error "unzip is required for Windows archives but not installed. Please install unzip and try again."
         fi
@@ -81,11 +81,11 @@ detect_os() {
         OS="windows"
         ;;
     *)
-        error "Unsupported operating system: $(uname -s)"
+        error "Unsupported operating system: $(uname -s || true)"
         ;;
     esac
 
-    info "Detected OS: $OS"
+    info "Detected OS: ${OS}"
 }
 
 # Detect the architecture
@@ -101,7 +101,7 @@ detect_arch() {
         ARCH="armv7"
         ;;
     armv6l | armv6)
-        if [ "$OS" = "windows" ]; then
+        if [ "${OS}" = "windows" ]; then
             error "ARMv6 is not supported on Windows"
         else
             ARCH="armv7" # Use armv7 binary for armv6 on Linux
@@ -109,21 +109,21 @@ detect_arch() {
         fi
         ;;
     *)
-        error "Unsupported architecture: $(uname -m). Supported: x86_64/amd64, aarch64/arm64, armv7"
+        error "Unsupported architecture: $(uname -m || true). Supported: x86_64/amd64, aarch64/arm64, armv7"
         ;;
     esac
 
     # Check architecture availability for Windows
-    if [ "$OS" = "windows" ] && [ "$ARCH" = "armv7" ]; then
+    if [ "${OS}" = "windows" ] && [ "${ARCH}" = "armv7" ]; then
         error "ARMv7 is not supported on Windows. Supported Windows architectures: amd64, arm64"
     fi
 
-    info "Detected architecture: $ARCH"
+    info "Detected architecture: ${ARCH}"
 }
 
 # Detect libc type (GNU vs MUSL)
 detect_libc() {
-    if [ "$OS" != "linux" ]; then
+    if [ "${OS}" != "linux" ]; then
         LIBC=""
         return
     fi
@@ -133,38 +133,49 @@ detect_libc() {
         LIBC="musl"
     elif ldd --version 2>&1 | grep -i glibc >/dev/null; then
         LIBC="gnu"
-    elif [ -f /lib/libc.musl-* ] || [ -f /usr/lib/libc.musl-* ]; then
-        LIBC="musl"
     else
-        # Default to GNU libc for most Linux distributions
-        LIBC="gnu"
-        info "Could not detect libc type, defaulting to GNU libc"
+        # Check for musl files in common locations
+        MUSL_FOUND=""
+        for musl_file in /lib/libc.musl-* /usr/lib/libc.musl-*; do
+            if [ -f "${musl_file}" ]; then
+                MUSL_FOUND="true"
+                break
+            fi
+        done
+
+        if [ -n "${MUSL_FOUND}" ]; then
+            LIBC="musl"
+        else
+            # Default to GNU libc for most Linux distributions
+            LIBC="gnu"
+            info "Could not detect libc type, defaulting to GNU libc"
+        fi
     fi
 
-    info "Detected libc: $LIBC"
+    info "Detected libc: ${LIBC}"
 }
 
 # Get the latest release version
 get_latest_version() {
     info "Fetching latest release information..."
 
-    if ! VERSION=$(curl -s "$GITHUB_API_URL" | grep '"tag_name":' | sed -E 's/.*"tag_name": "([^"]+)".*/\1/'); then
+    if ! VERSION=$(curl -s "${GITHUB_API_URL}" | grep '"tag_name":' | sed -E 's/.*"tag_name": "([^"]+)".*/\1/'); then
         error "Failed to fetch release information from GitHub API"
     fi
 
-    if [ -z "$VERSION" ]; then
+    if [ -z "${VERSION}" ]; then
         error "Could not determine latest version"
     fi
 
-    info "Latest version: $VERSION"
+    info "Latest version: ${VERSION}"
 }
 
 # Construct the download filename
 construct_filename() {
-    if [ "$OS" = "linux" ]; then
+    if [ "${OS}" = "linux" ]; then
         BINARY_NAME="coco-bot-${OS}-${ARCH}-${LIBC}"
         ARCHIVE_NAME="${BINARY_NAME}.tar.gz"
-    elif [ "$OS" = "windows" ]; then
+    elif [ "${OS}" = "windows" ]; then
         BINARY_NAME="coco-bot-${OS}-${ARCH}"
         ARCHIVE_NAME="${BINARY_NAME}.zip"
     else
@@ -173,7 +184,7 @@ construct_filename() {
 
     CHECKSUM_NAME="${ARCHIVE_NAME}.sha256"
 
-    info "Target archive: $ARCHIVE_NAME"
+    info "Target archive: ${ARCHIVE_NAME}"
 }
 
 # Download the archive and checksum
@@ -181,33 +192,33 @@ download_files() {
     DOWNLOAD_URL="${GITHUB_RELEASE_URL}/${VERSION}/${ARCHIVE_NAME}"
     CHECKSUM_URL="${GITHUB_RELEASE_URL}/${VERSION}/${CHECKSUM_NAME}"
 
-    info "Downloading from: $DOWNLOAD_URL"
+    info "Downloading from: ${DOWNLOAD_URL}"
 
     # Download the archive
-    if ! curl -L -o "$ARCHIVE_NAME" "$DOWNLOAD_URL"; then
-        error "Failed to download $ARCHIVE_NAME"
+    if ! curl -L -o "${ARCHIVE_NAME}" "${DOWNLOAD_URL}"; then
+        error "Failed to download ${ARCHIVE_NAME}"
     fi
 
     # Download the checksum file if checksum command is available
-    if [ -n "$CHECKSUM_CMD" ]; then
+    if [ -n "${CHECKSUM_CMD}" ]; then
         info "Downloading checksum file..."
-        if ! curl -L -o "$CHECKSUM_NAME" "$CHECKSUM_URL"; then
+        if ! curl -L -o "${CHECKSUM_NAME}" "${CHECKSUM_URL}"; then
             warn "Failed to download checksum file, skipping verification"
             CHECKSUM_CMD=""
         fi
     fi
 
-    success "Downloaded $ARCHIVE_NAME"
+    success "Downloaded ${ARCHIVE_NAME}"
 }
 
 # Verify the checksum
 verify_checksum() {
-    if [ -z "$CHECKSUM_CMD" ]; then
+    if [ -z "${CHECKSUM_CMD}" ]; then
         warn "Skipping checksum verification (no checksum utility available)"
         return
     fi
 
-    if [ ! -f "$CHECKSUM_NAME" ]; then
+    if [ ! -f "${CHECKSUM_NAME}" ]; then
         warn "Checksum file not available, skipping verification"
         return
     fi
@@ -215,103 +226,98 @@ verify_checksum() {
     info "Verifying checksum..."
 
     # Read expected checksum from file
-    EXPECTED_CHECKSUM=$(cut -d' ' -f1 "$CHECKSUM_NAME")
+    EXPECTED_CHECKSUM=$(cut -d' ' -f1 "${CHECKSUM_NAME}")
 
     # Calculate actual checksum
-    ACTUAL_CHECKSUM=$($CHECKSUM_CMD "$ARCHIVE_NAME" | cut -d' ' -f1)
+    ACTUAL_CHECKSUM=$(${CHECKSUM_CMD} "${ARCHIVE_NAME}" | cut -d' ' -f1)
 
-    if [ "$EXPECTED_CHECKSUM" = "$ACTUAL_CHECKSUM" ]; then
+    if [ "${EXPECTED_CHECKSUM}" = "${ACTUAL_CHECKSUM}" ]; then
         success "Checksum verification passed"
     else
-        error "Checksum verification failed! Expected: $EXPECTED_CHECKSUM, Got: $ACTUAL_CHECKSUM"
+        error "Checksum verification failed! Expected: ${EXPECTED_CHECKSUM}, Got: ${ACTUAL_CHECKSUM}"
     fi
 }
 
 # Extract the archive
 extract_archive() {
-    info "Extracting $ARCHIVE_NAME..."
+    info "Extracting ${ARCHIVE_NAME}..."
 
-    if [ "$OS" = "windows" ]; then
-        if ! unzip -q "$ARCHIVE_NAME"; then
-            error "Failed to extract $ARCHIVE_NAME"
+    if [ "${OS}" = "windows" ]; then
+        if ! unzip -q "${ARCHIVE_NAME}"; then
+            error "Failed to extract ${ARCHIVE_NAME}"
         fi
 
-        success "Extracted $ARCHIVE_NAME"
+        success "Extracted ${ARCHIVE_NAME}"
 
         # List extracted contents
         info "Extracted files:"
-        unzip -l "$ARCHIVE_NAME" | tail -n +4 | head -n -2 | awk '{print "  " $4}'
+        unzip -l "${ARCHIVE_NAME}" | tail -n +4 | head -n -2 | awk '{print "  " $4}'
     else
-        if ! tar -xzf "$ARCHIVE_NAME"; then
-            error "Failed to extract $ARCHIVE_NAME"
+        if ! tar -xzf "${ARCHIVE_NAME}"; then
+            error "Failed to extract ${ARCHIVE_NAME}"
         fi
 
-        success "Extracted $ARCHIVE_NAME"
+        success "Extracted ${ARCHIVE_NAME}"
 
         # List extracted contents
         info "Extracted files:"
-        tar -tzf "$ARCHIVE_NAME" | sed 's/^/  /'
+        tar -tzf "${ARCHIVE_NAME}" | sed 's/^/  /'
     fi
 }
 
 # Clean up downloaded files
 cleanup() {
     if [ "$1" = "keep-archive" ]; then
-        info "Keeping archive file: $ARCHIVE_NAME"
+        info "Keeping archive file: ${ARCHIVE_NAME}"
     else
         info "Cleaning up downloaded files..."
-        rm -f "$ARCHIVE_NAME"
+        rm -f "${ARCHIVE_NAME}"
     fi
 
-    rm -f "$CHECKSUM_NAME"
+    rm -f "${CHECKSUM_NAME}"
 }
 
 # Make binary executable and show usage info
 finalize_installation() {
     # Find the extracted binary
-    if [ "$OS" = "windows" ]; then
+    if [ "${OS}" = "windows" ]; then
         BINARY_PATH=$(find . -name "coco-bot.exe" -type f 2>/dev/null | head -1)
-        if [ -z "$BINARY_PATH" ]; then
+        if [ -z "${BINARY_PATH}" ]; then
             BINARY_PATH=$(find . -name "coco-bot" -type f 2>/dev/null | head -1)
         fi
     else
         # Look for Linux binary (coco-bot.bin)
         BINARY_PATH=$(find . -name "coco-bot.bin" -type f -executable 2>/dev/null | head -1)
 
-        if [ -z "$BINARY_PATH" ]; then
+        if [ -z "${BINARY_PATH}" ]; then
             # Fallback: look for any coco-bot.bin file and make it executable
             BINARY_PATH=$(find . -name "coco-bot.bin" -type f 2>/dev/null | head -1)
-            if [ -n "$BINARY_PATH" ]; then
-                chmod +x "$BINARY_PATH"
+            if [ -n "${BINARY_PATH}" ]; then
+                chmod +x "${BINARY_PATH}"
             fi
         fi
 
         # Final fallback: look for coco-bot without extension
-        if [ -z "$BINARY_PATH" ]; then
+        if [ -z "${BINARY_PATH}" ]; then
             BINARY_PATH=$(find . -name "coco-bot" -type f -executable 2>/dev/null | head -1)
-            if [ -z "$BINARY_PATH" ]; then
+            if [ -z "${BINARY_PATH}" ]; then
                 BINARY_PATH=$(find . -name "coco-bot" -type f 2>/dev/null | head -1)
-                if [ -n "$BINARY_PATH" ]; then
-                    chmod +x "$BINARY_PATH"
+                if [ -n "${BINARY_PATH}" ]; then
+                    chmod +x "${BINARY_PATH}"
                 fi
             fi
         fi
     fi
 
-    if [ -n "$BINARY_PATH" ]; then
-        success "Coco Bot binary installed at: $BINARY_PATH"
-
-        # Show version information
-        if "$BINARY_PATH" --version >/dev/null 2>&1; then
-            info "Version: $("$BINARY_PATH" --version)"
-        fi
+    if [ -n "${BINARY_PATH}" ]; then
+        success "Coco Bot binary installed at: ${BINARY_PATH}"
 
         echo ""
         info "Installation complete! You can now run:"
-        if [ "$OS" = "windows" ]; then
-            echo "  $BINARY_PATH"
+        if [ "${OS}" = "windows" ]; then
+            echo "  ${BINARY_PATH}"
         else
-            echo "  ./$BINARY_PATH"
+            echo "  ./${BINARY_PATH}"
         fi
         echo ""
         info "Make sure to create a .env file with your bot token before running."
@@ -390,52 +396,52 @@ done
 
 # Validate manual overrides
 validate_overrides() {
-    if [ -n "$OVERRIDE_OS" ]; then
-        case "$OVERRIDE_OS" in
+    if [ -n "${OVERRIDE_OS}" ]; then
+        case "${OVERRIDE_OS}" in
         linux | windows | darwin)
-            OS="$OVERRIDE_OS"
-            info "Using manual OS override: $OS"
+            OS="${OVERRIDE_OS}"
+            info "Using manual OS override: ${OS}"
             ;;
         *)
-            error "Invalid platform: $OVERRIDE_OS. Supported: linux, windows, darwin"
+            error "Invalid platform: ${OVERRIDE_OS}. Supported: linux, windows, darwin"
             ;;
         esac
     fi
 
-    if [ -n "$OVERRIDE_ARCH" ]; then
-        case "$OVERRIDE_ARCH" in
+    if [ -n "${OVERRIDE_ARCH}" ]; then
+        case "${OVERRIDE_ARCH}" in
         amd64 | arm64 | armv7)
-            ARCH="$OVERRIDE_ARCH"
-            info "Using manual architecture override: $ARCH"
+            ARCH="${OVERRIDE_ARCH}"
+            info "Using manual architecture override: ${ARCH}"
             ;;
         *)
-            error "Invalid architecture: $OVERRIDE_ARCH. Supported: amd64, arm64, armv7"
+            error "Invalid architecture: ${OVERRIDE_ARCH}. Supported: amd64, arm64, armv7"
             ;;
         esac
     fi
 
-    if [ -n "$OVERRIDE_LIBC" ]; then
-        case "$OVERRIDE_LIBC" in
+    if [ -n "${OVERRIDE_LIBC}" ]; then
+        case "${OVERRIDE_LIBC}" in
         gnu | musl)
-            LIBC="$OVERRIDE_LIBC"
-            info "Using manual libc override: $LIBC"
+            LIBC="${OVERRIDE_LIBC}"
+            info "Using manual libc override: ${LIBC}"
             ;;
         *)
-            error "Invalid libc: $OVERRIDE_LIBC. Supported: gnu, musl"
+            error "Invalid libc: ${OVERRIDE_LIBC}. Supported: gnu, musl"
             ;;
         esac
     fi
 
     # Validate platform/architecture compatibility
-    if [ -n "$OVERRIDE_OS" ] && [ -n "$OVERRIDE_ARCH" ]; then
-        if [ "$OS" = "windows" ] && [ "$ARCH" = "armv7" ]; then
+    if [ -n "${OVERRIDE_OS}" ] && [ -n "${OVERRIDE_ARCH}" ]; then
+        if [ "${OS}" = "windows" ] && [ "${ARCH}" = "armv7" ]; then
             error "ARMv7 is not supported on Windows. Supported Windows architectures: amd64, arm64"
         fi
     fi
 
     # Warn if libc is specified for non-Linux platforms
-    if [ -n "$OVERRIDE_LIBC" ] && [ "$OS" != "linux" ]; then
-        warn "libc setting ignored for non-Linux platform: $OS"
+    if [ -n "${OVERRIDE_LIBC}" ] && [ "${OS}" != "linux" ]; then
+        warn "libc setting ignored for non-Linux platform: ${OS}"
         LIBC=""
     fi
 }
@@ -447,37 +453,37 @@ display_dry_run_info() {
     echo ""
 
     info "Platform Detection Results:"
-    echo "  Operating System: $OS"
-    echo "  Architecture: $ARCH"
-    if [ "$OS" = "linux" ]; then
-        echo "  Libc Type: $LIBC"
+    echo "  Operating System: ${OS}"
+    echo "  Architecture: ${ARCH}"
+    if [ "${OS}" = "linux" ]; then
+        echo "  Libc Type: ${LIBC}"
     fi
     echo ""
 
     info "Download Information:"
-    echo "  Version: $VERSION"
-    echo "  Archive: $ARCHIVE_NAME"
-    echo "  Checksum: $CHECKSUM_NAME"
+    echo "  Version: ${VERSION}"
+    echo "  Archive: ${ARCHIVE_NAME}"
+    echo "  Checksum: ${CHECKSUM_NAME}"
     echo "  Download URL: ${GITHUB_RELEASE_URL}/${VERSION}/${ARCHIVE_NAME}"
     echo "  Checksum URL: ${GITHUB_RELEASE_URL}/${VERSION}/${CHECKSUM_NAME}"
     echo ""
 
     info "Manual Overrides Applied:"
-    if [ -n "$OVERRIDE_OS" ]; then
-        echo "  Platform: $OVERRIDE_OS (overridden)"
+    if [ -n "${OVERRIDE_OS}" ]; then
+        echo "  Platform: ${OVERRIDE_OS} (overridden)"
     else
         echo "  Platform: auto-detected"
     fi
 
-    if [ -n "$OVERRIDE_ARCH" ]; then
-        echo "  Architecture: $OVERRIDE_ARCH (overridden)"
+    if [ -n "${OVERRIDE_ARCH}" ]; then
+        echo "  Architecture: ${OVERRIDE_ARCH} (overridden)"
     else
         echo "  Architecture: auto-detected"
     fi
 
-    if [ -n "$OVERRIDE_LIBC" ]; then
-        echo "  Libc: $OVERRIDE_LIBC (overridden)"
-    elif [ "$OS" = "linux" ]; then
+    if [ -n "${OVERRIDE_LIBC}" ]; then
+        echo "  Libc: ${OVERRIDE_LIBC} (overridden)"
+    elif [ "${OS}" = "linux" ]; then
         echo "  Libc: auto-detected"
     else
         echo "  Libc: not applicable"
@@ -485,7 +491,7 @@ display_dry_run_info() {
     echo ""
 
     info "Expected Binary:"
-    if [ "$OS" = "windows" ]; then
+    if [ "${OS}" = "windows" ]; then
         echo "  Binary Name: coco-bot.exe or coco-bot"
     else
         echo "  Binary Name: coco-bot.bin"
@@ -500,7 +506,7 @@ main() {
     info "Starting Coco Bot installation..."
 
     # First detect the platform if no overrides are provided
-    if [ -z "$OVERRIDE_OS" ]; then
+    if [ -z "${OVERRIDE_OS}" ]; then
         detect_os
     fi
 
@@ -510,21 +516,21 @@ main() {
     check_dependencies
 
     # Only run auto-detection for values not manually overridden
-    if [ -z "$OVERRIDE_OS" ]; then
+    if [ -z "${OVERRIDE_OS}" ]; then
         detect_os
     fi
 
-    if [ -z "$OVERRIDE_ARCH" ]; then
+    if [ -z "${OVERRIDE_ARCH}" ]; then
         detect_arch
     fi
 
-    if [ -z "$OVERRIDE_LIBC" ] && [ "$OS" = "linux" ]; then
+    if [ -z "${OVERRIDE_LIBC}" ] && [ "${OS}" = "linux" ]; then
         detect_libc
     fi
 
-    if [ -n "$CUSTOM_VERSION" ]; then
-        VERSION="$CUSTOM_VERSION"
-        info "Using specified version: $VERSION"
+    if [ -n "${CUSTOM_VERSION}" ]; then
+        VERSION="${CUSTOM_VERSION}"
+        info "Using specified version: ${VERSION}"
     else
         get_latest_version
     fi
@@ -532,7 +538,7 @@ main() {
     construct_filename
 
     # If dry run mode, show information and exit
-    if [ -n "$DRY_RUN" ]; then
+    if [ -n "${DRY_RUN}" ]; then
         display_dry_run_info
         exit 0
     fi
@@ -540,7 +546,7 @@ main() {
     download_files
     verify_checksum
     extract_archive
-    cleanup "$KEEP_ARCHIVE"
+    cleanup "${KEEP_ARCHIVE}"
     finalize_installation
 
     success "Coco Bot installation completed successfully!"
