@@ -2,6 +2,7 @@ mod about;
 mod advice;
 mod dad_joke;
 mod fact;
+mod fortune;
 mod generate_meme;
 mod let_me_google_that;
 mod ping;
@@ -20,6 +21,7 @@ pub fn all_commands() -> Vec<Command<Data, Error>> {
         advice::advice(),
         dad_joke::dad_joke(),
         fact::fact(),
+        fortune::fortune(),
         generate_meme::generate_meme(),
         let_me_google_that::let_me_google_that(),
         ping::ping(),
