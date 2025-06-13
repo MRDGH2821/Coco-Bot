@@ -6,6 +6,7 @@ mod generate_meme;
 mod let_me_google_that;
 mod ping;
 mod register;
+mod say;
 mod user_info;
 mod xkcd;
 
@@ -23,6 +24,7 @@ pub fn all_commands() -> Vec<Command<Data, Error>> {
         let_me_google_that::let_me_google_that(),
         ping::ping(),
         register::register(),
+        say::say(),
         user_info::user_info(),
         xkcd::xkcd(),
     ]
