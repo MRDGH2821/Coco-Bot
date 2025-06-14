@@ -27,6 +27,13 @@ RUST_CLIPPY_PRE_COMMANDS:
     secured_env: true
     command: apk add openssl-dev perl
 
+RUST_CLIPPY_POST_COMMANDS:
+  - continue_if_failed: true
+    secured_env: true
+    command: cargo clean
+
+CLEAR_REPORT_FOLDER: true
+
 SHOW_ELAPSED_TIME: true
 # Uncomment if you want MegaLinter to detect errors but not block CI to pass
 # DISABLE_ERRORS: true
