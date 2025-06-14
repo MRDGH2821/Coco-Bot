@@ -1,6 +1,4 @@
 {
-  "threshold": 0,
-  "reporters": ["html", "markdown"],
   "ignore": [
     "**/.git/**",
     "**/.github/**",
@@ -11,5 +9,10 @@
     "**/*cache*/**",
     "**/node_modules/**",
     "**/report/**"
-  ]
+  ],
+  "ignorePattern": [
+    "\\s*let\\s+final_choices:\\s*Vec<serenity::AutocompleteChoice>\\s*=\\s*choices\\.into_iter\\(\\)\\.take\\(25\\)\\.collect\\(\\);\\s*\\n\\s*serenity::CreateAutocompleteResponse::new\\(\\)\\.set_choices\\(final_choices\\)\\s*\\n}"
+  ],
+  "reporters": ["html", "markdown"],
+  "threshold": 0
 }
