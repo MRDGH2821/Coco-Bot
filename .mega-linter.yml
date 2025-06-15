@@ -32,6 +32,9 @@ RUST_CLIPPY_POST_COMMANDS:
     secured_env: true
     command: cargo clean
 
+REPOSITORY_TRIVY_ARGUMENTS: ["--skip-dirs", "target"]
+REPOSITORY_TRIVY_SBOM_ARGUMENTS: ["--skip-dirs", "target"]
+
 CLEAR_REPORT_FOLDER: true
 
 SHOW_ELAPSED_TIME: true
