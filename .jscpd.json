@@ -1,18 +1,22 @@
 {
+  "gitignore": true,
   "ignore": [
+    "**/.devcontainer/**",
     "**/.git/**",
     "**/.github/**",
     "**/.idea/**",
     "**/.rbenv/**",
+    "**/.trunk/**",
     "**/.venv/**",
+    "**/.vscode/**",
     "**/*.svg",
     "**/*cache*/**",
     "**/node_modules/**",
-    "**/report/**"
+    "**/report/**",
+    "**/target/**"
   ],
-  "ignorePattern": [
-    "\\s*let\\s+final_choices:\\s*Vec<serenity::AutocompleteChoice>\\s*=\\s*choices\\.into_iter\\(\\)\\.take\\(25\\)\\.collect\\(\\);\\s*\\n\\s*serenity::CreateAutocompleteResponse::new\\(\\)\\.set_choices\\(final_choices\\)\\s*\\n}"
-  ],
+  "minLines": 10,
+  "minTokens": 80,
   "reporters": ["html", "markdown"],
   "threshold": 0
 }
