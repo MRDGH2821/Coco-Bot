@@ -34,6 +34,12 @@
       "type": "shell",
       "command": "npx mega-linter-runner --flavor rust",
       "label": "Run Mega Linter"
+    },
+    {
+      "type": "shell",
+      "command": "rm -rf megalinter-reports report",
+      "label": "Clean Reports Folders",
+      "group": "build"
     }
   ]
 }
