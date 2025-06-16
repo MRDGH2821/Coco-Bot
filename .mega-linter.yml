@@ -27,13 +27,10 @@ RUST_CLIPPY_PRE_COMMANDS:
     secured_env: true
     command: apk add openssl-dev perl
 
-RUST_CLIPPY_POST_COMMANDS:
-  - continue_if_failed: true
-    secured_env: true
-    command: cargo clean
+REPOSITORY_TRIVY_ARGUMENTS: [--skip-dirs, target]
+REPOSITORY_TRIVY_SBOM_ARGUMENTS: [--skip-dirs, target]
 
-REPOSITORY_TRIVY_ARGUMENTS: ["--skip-dirs", "target"]
-REPOSITORY_TRIVY_SBOM_ARGUMENTS: ["--skip-dirs", "target"]
+BASH_SHFMT_ARGUMENTS: [--indent=4]
 
 CLEAR_REPORT_FOLDER: true
 
