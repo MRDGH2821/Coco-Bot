@@ -37,7 +37,7 @@
     "ghcr.io/lee-orr/rusty-dev-containers/cargo-watch": {},
     "ghcr.io/trunk-io/devcontainer-feature/trunk": {}
   },
-  "image": "mcr.microsoft.com/devcontainers/rust:1-1-bullseye",
+  "image": "mcr.microsoft.com/devcontainers/rust:latest",
   "mounts": [
     {
       "source": "devcontainer-cargo-cache-${devcontainerId}",
