@@ -21,20 +21,20 @@
     }
   },
   "features": {
-    "ghcr.io/devcontainers-community/npm-features/prettier:1": {},
-    "ghcr.io/devcontainers-extra/features/npm-package:1": {
+    "ghcr.io/devcontainers-community/npm-features/prettier": {},
+    "ghcr.io/devcontainers-extra/features/npm-package": {
       "package": "mega-linter-runner",
       "version": "latest"
     },
     "ghcr.io/devcontainers/features/docker-in-docker": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers/features/rust:1": {},
+    "ghcr.io/devcontainers/features/github-cli": {},
+    "ghcr.io/devcontainers/features/rust": {},
     "ghcr.io/dhoeric/features/hadolint": {},
     "ghcr.io/itsmechlark/features/postgresql": {},
-    "ghcr.io/lee-orr/rusty-dev-containers/cargo-binstall:0": {
+    "ghcr.io/lee-orr/rusty-dev-containers/cargo-binstall": {
       "packages": "cocogitto,cargo-edit"
     },
-    "ghcr.io/lee-orr/rusty-dev-containers/cargo-watch:0": {},
+    "ghcr.io/lee-orr/rusty-dev-containers/cargo-watch": {},
     "ghcr.io/trunk-io/devcontainer-feature/trunk": {}
   },
   "image": "mcr.microsoft.com/devcontainers/rust:1-1-bullseye",
