@@ -41,6 +41,7 @@
       "url": "https://www.schemastore.org/jscpd.json"
     }
   ],
+  "pgsql.copilot.enable": true,
   "rust-analyzer.diagnostics.styleLints.enable": true,
   "shellformat.flag": "-i=4"
 }
