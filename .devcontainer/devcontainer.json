@@ -48,5 +48,6 @@
   "name": "Coco bot dev container",
   "postCreateCommand": {
     "cocogitto-bootstrap": "bash .devcontainer/cocogitto-bootstrap.sh"
-  }
+  },
+  "runArgs": ["--network=host"]
 }
